@@ -71,14 +71,18 @@ class assScalaQuestionGUI extends assQuestionGUI
     {
         global $DIC;
 
+        //Si la pregunta está guardada en la BD
+        if ($this->object->getScala() !== null) {
+            if ($this->object->getScala()->getQuestionId() != -1) {
+                return $this->editQuestionView($checkonly);
+            }
+        }
+
         //Si la scala no se ha iniciado por que la pregunta de la actual id
         //es nueva (import o nueva) y por tanto id = -1
         //mostrar formulario de importación
-        if ($this->object->getScala()->getQuestionId() == -1) {
-            $this->importQuestionFromILIASSurveyView($checkonly);
-        } elseif ($this->object->getScala() !== null and $this->object->getScala()->getQuestionId() != -1) {
-            //Si la pregunta está guardada en la BD
-                $this->editQuestionView($checkonly);
+        if (!$checkonly) {
+            $DIC->ctrl()->redirect($this, 'importQuestionFromILIASSurveyView');
         }
 
         return true;
@@ -318,7 +322,7 @@ class assScalaQuestionGUI extends assQuestionGUI
      * Muestra el formulario para subir el XML con las preguntas
      * @return void
      */
-    public function importQuestionFromILIASSurveyView($checkonly = false)
+    public function importQuestionFromILIASSurveyView()
     {
         global $DIC;
         $tabs = $DIC->tabs();
@@ -350,7 +354,7 @@ class assScalaQuestionGUI extends assQuestionGUI
      * @param bool $checkonly
      * @return bool
      */
-    public function editQuestionView($checkonly = false): bool
+    public function editQuestionView(bool $checkonly = false): bool
     {
         global $DIC;
         $tabs = $DIC['ilTabs'];
@@ -358,23 +362,17 @@ class assScalaQuestionGUI extends assQuestionGUI
         $save = $this->isSaveCommand();
         $this->getQuestionTemplate();
 
-        include_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
         $form = new ilPropertyFormGUI();
-        $this->editForm = $form;
-
         $form->setFormAction($this->ctrl->getFormAction($this));
         $form->setTitle($this->outQuestionType());
-        $form->setMultipart(false);
-        $form->setTableWidth("100%");
-        $form->setId("orderinghorizontal");
+        $form->setId("xqscala_edit");
 
         $this->addBasicQuestionFormProperties($form);
 
-        //SPECIFIC PART
+        //SCALA SECTION
+
 
         $this->populateTaxonomyFormSection($form);
-
-        $form->addCommandButton("analyze", $this->lng->txt('analyze_errortext'));
         $this->addQuestionFormCommandButtons($form);
 
         $errors = false;
@@ -382,8 +380,7 @@ class assScalaQuestionGUI extends assQuestionGUI
         if ($save) {
             $form->setValuesByPost();
             $errors = !$form->checkInput();
-            $form->setValuesByPost(
-            ); // again, because checkInput now performs the whole stripSlashes handling and we need this if we don't want to have duplication of backslashes
+            $form->setValuesByPost(); // again, because checkInput now performs the whole stripSlashes handling and we need this if we don't want to have duplication of backslashes
             if ($errors) {
                 $checkonly = false;
             }
