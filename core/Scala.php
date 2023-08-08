@@ -193,9 +193,55 @@ class Scala
             return $scala;
         }
 
-        return null; // Devuelve null si el JSON no se puede convertir en una instancia de Scala
+        return null; //Devuelve null si el JSON no se puede convertir en una instancia de Scala
     }
 
+    /**
+     * Devuelve un array con las columnas y filas en la posición 0 y rellena el resto de celdas con 0.0
+     * @return array
+     */
+    public function getBlankScala(): array
+    {
+        $scala = [];
+
+        // Agregar los textos de columnas como la primera fila
+        $scala[] = array_merge([''], $this->getColumns());
+
+        // Iterar a través de los elementos y agregar los textos de elementos y los índices de columna
+        foreach ($this->getItems() as $itemIndex => $itemText) {
+            $row = [$itemText];
+            foreach ($this->getColumns() as $columnIndex => $columnText) {
+                $row[] = 0.0;
+            }
+            $scala[] = $row;
+        }
+
+        return $scala;
+    }
+
+    /**
+     * Devuelve un array con las columnas y filas en la posición 0 y rellena el resto de celdas con
+     * su valor en Evaluation Scala
+     * @return array
+     */
+    public function getScalaWithPoints(): array
+    {
+        $scala = [];
+
+        // Agregar los textos de columnas como la primera fila
+        $scala[] = array_merge([''], $this->getColumns());
+
+        // Iterar a través de los elementos y agregar los textos de elementos y los índices de columna
+        foreach ($this->getItems() as $itemIndex => $itemText) {
+            $row = [$itemText];
+            foreach ($this->getColumns() as $columnIndex => $columnText) {
+                $row[] = $this->getEvaluationScala()[$itemIndex+1][$columnIndex+1];
+            }
+            $scala[] = $row;
+        }
+
+        return $scala;
+    }
 
     /**
      * @return mixed

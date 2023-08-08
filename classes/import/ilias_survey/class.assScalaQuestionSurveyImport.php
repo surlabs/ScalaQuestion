@@ -86,7 +86,7 @@ class assScalaQuestionSurveyImport
                 ilUtil::sendFailure($exception->getMessage(), true);
             }
         }
-         return $number_of_questions_created;
+        return $number_of_questions_created;
     }
 
     /**
@@ -123,14 +123,26 @@ class assScalaQuestionSurveyImport
 
             //Nos inventamos una escala ya que este dato no viene desde el objeto survey
             //usaremos el id numero de column como puntos por defecto
+
+            //Calculate max points from each row
+            $max_points_array = [];
+
             foreach ($this->getIliasQuestion()->getScala()->getItems() as $index_item => $item_text) {
                 foreach ($this->getIliasQuestion()->getScala()->getColumns() as $index_column => $column_text) {
                     //rellenamos con la puntuacion
-                    $current_evaluation[$index_item][$index_column] = (floatval($index_column + 1));
+                    $points = (floatval($index_column + 1));
+                    $current_evaluation[$index_item + 1][$index_column + 1] = $points;
+
+                    //calculate max points
+                    if ((float) $max_points_array[$index_item] < $points) {
+                        $max_points_array[$index_item] = $points;
+                    }
                 }
             }
-
             $this->getIliasQuestion()->getScala()->setEvaluationScala($current_evaluation);
+            $this->getIliasQuestion()->setPoints(
+                (int) array_sum($max_points_array) / $this->getIliasQuestion()->getScala()->getNumItems()
+            );
 
             $current_to_json = $this->getIliasQuestion()->getScala()->toJSON();
             $this->getIliasQuestion()->getScala()->setRawData($current_to_json);

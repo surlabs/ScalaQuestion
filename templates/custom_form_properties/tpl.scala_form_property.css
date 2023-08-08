@@ -1,0 +1,13 @@
+.scala-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.scala-table th, .scala-table td {
+    padding: 8px;
+    text-align: center;
+}
+
+.scala-table th {
+    background-color: #f2f2f2;
+}

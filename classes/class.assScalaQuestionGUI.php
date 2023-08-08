@@ -96,19 +96,70 @@ class assScalaQuestionGUI extends assQuestionGUI
      */
     protected function writePostData($always = false): int
     {
-        $hasErrors = (!$always) ? $this->editQuestion(true) : false;
-        if (!$hasErrors) {
-            $this->writeQuestionGenericPostData();
+        $this->writeQuestionGenericPostData();
 
-            // Here you can write the question type specific values
-            // Some question types define the maximum points directly,
-            // other calculate them from other properties
-            $this->object->setPoints((int) $_POST["points"]);
-
-            $this->saveTaxonomyAssignments();
-            return 0;
+        //Update columns
+        $new_columns = [];
+        for ($c = 0; $c <= $this->object->getScala()->getNumColumns(); $c++) {
+            if (isset($_POST['scala_cell_0_' . $c])) {
+                if ($c !== 0) {
+                    $new_columns[$c - 1] = $_POST['scala_cell_0_' . $c];
+                }
+            }
         }
-        return 1;
+        $this->object->getScala()->setColumns($new_columns);
+
+        //Update items
+        $new_items = [];
+        for ($i = 0; $i <= $this->object->getScala()->getNumItems(); $i++) {
+            if (isset($_POST['scala_cell_' . $i . '_0'])) {
+                if ($i !== 0) {
+                    $new_items[$i - 1] = $_POST['scala_cell_' . $i . '_0'];
+                }
+            }
+        }
+        $this->object->getScala()->setItems($new_items);
+
+        //Update evaluation scala
+        $new_evaluation_scala = [];
+        //Calculate max points from each row
+        $max_points_array = [];
+
+        for ($i = 1; $i <= $this->object->getScala()->getNumItems(); $i++) {
+            for ($c = 1; $c <= $this->object->getScala()->getNumColumns(); $c++) {
+                if (isset($_POST['scala_cell_' . $i . '_' . $c])) {
+                    if ($i !== 0) {
+                        $points = $_POST['scala_cell_' . $i . '_' . $c];
+                        $new_evaluation_scala[$i][$c] = $points;
+
+                        //calculate max points
+                        if ((float) $max_points_array[$i] < (float) $points) {
+                            $max_points_array[$i] = (float) $points;
+                        }
+                    }
+                }
+            }
+        }
+        $this->object->getScala()->setEvaluationScala($new_evaluation_scala);
+
+        //Update JSON to ensure it is saved to DB
+        $this->object->getScala()->toJSON();
+
+        //var_dump($this->object->getScala());exit;
+        //TODO no estamos checkeando nada
+        //$hasErrors = (!$always) ? $this->editQuestion(true) : false;
+        //if (!$hasErrors) {
+
+        // Here you can write the question type specific values
+        // Some question types define the maximum points directly,
+        // other calculate them from other properties
+        $this->object->setPoints((int) array_sum($max_points_array) / $this->object->getScala()->getNumItems());
+
+        //Get Scala data from user Post
+
+        $this->saveTaxonomyAssignments();
+        return 0;
+        //}
     }
 
     /**
@@ -370,7 +421,10 @@ class assScalaQuestionGUI extends assQuestionGUI
         $this->addBasicQuestionFormProperties($form);
 
         //SCALA SECTION
-
+        $scala_form = new ilScalaFormPropertyGUI("scala", "scala");
+        $scala_form->setScala($this->object->getScala());
+        $scala_form->init('edit');
+        $form->addItem($scala_form);
 
         $this->populateTaxonomyFormSection($form);
         $this->addQuestionFormCommandButtons($form);
@@ -380,7 +434,8 @@ class assScalaQuestionGUI extends assQuestionGUI
         if ($save) {
             $form->setValuesByPost();
             $errors = !$form->checkInput();
-            $form->setValuesByPost(); // again, because checkInput now performs the whole stripSlashes handling and we need this if we don't want to have duplication of backslashes
+            $form->setValuesByPost(
+            ); // again, because checkInput now performs the whole stripSlashes handling and we need this if we don't want to have duplication of backslashes
             if ($errors) {
                 $checkonly = false;
             }
