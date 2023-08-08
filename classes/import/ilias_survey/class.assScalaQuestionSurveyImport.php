@@ -98,6 +98,7 @@ class assScalaQuestionSurveyImport
         try {
             //Establecemos valores generales de la pregunta
             $this->getIliasQuestion()->setTitle($matrix['@attributes']['title']);
+            $this->getIliasQuestion()->setComment($matrix['questiontext']['material']['mattext']);
             $this->getIliasQuestion()->setAuthor($matrix['author']);
             $this->getIliasQuestion()->setQuestion($matrix['questiontext']['material']['mattext']);
 
