@@ -55,8 +55,13 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         string $question = ''
     ) {
         parent::__construct($title, $comment, $author, $owner, $question);
+
+        //set Scala object
         $scala = new Scala($this->getId(), $this->getId());
+        $scala->setFeedbackScala($this->parseFeedback($question));
+
         $this->setScala($scala);
+
     }
 
     /**
@@ -347,6 +352,26 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
             'value1' => empty($value1) ? null : $value1,
             'value2' => empty($value2) ? null : (float) $value2
         );
+    }
+
+    /**
+     * Comprueba el texto en busca de placeholders de feedback y devuelve el estado actual del feedback de la pregunta
+     * @param string $text_to_parse
+     * @return array
+     */
+    function parseFeedback(string $text_to_parse): array
+    {
+        $pattern = '/\[\[feedback:(\d+)\]\](.*?)\[\[\/feedback\]\]/s';
+        preg_match_all($pattern, $text_to_parse, $matches, PREG_SET_ORDER);
+
+        $result = [];
+        foreach ($matches as $match) {
+            $key = intval($match[1]);
+            $value = $match[2];
+            $result[$key] = $value;
+        }
+
+        return $result;
     }
 
     /**

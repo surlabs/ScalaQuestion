@@ -30,5 +30,14 @@ declare(strict_types=1);
  */
 class ilAssScalaQuestionFeedback extends ilAssMultiOptionQuestionFeedback
 {
-    //Investigar uso de esta clase en otros metodos
+    /**
+     * returns the answer options mapped by answer index
+     * (overwrites parent method from ilAssMultiOptionQuestionFeedback)
+     *
+     * @return array $answerOptionsByAnswerIndex
+     */
+    public function getAnswerOptionsByAnswerIndex()
+    {
+        var_dump($this->questionOBJ->getScala());exit;
+    }
 }

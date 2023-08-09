@@ -142,6 +142,8 @@ class assScalaQuestionGUI extends assQuestionGUI
         }
         $this->object->getScala()->setEvaluationScala($new_evaluation_scala);
 
+        //parse question text searching for feedback scala
+        $this->object->getScala()->setFeedbackScala($this->object->parseFeedback($this->object->getQuestion()));
         //Update JSON to ensure it is saved to DB
         $this->object->getScala()->toJSON();
 
@@ -150,9 +152,6 @@ class assScalaQuestionGUI extends assQuestionGUI
         //$hasErrors = (!$always) ? $this->editQuestion(true) : false;
         //if (!$hasErrors) {
 
-        // Here you can write the question type specific values
-        // Some question types define the maximum points directly,
-        // other calculate them from other properties
         $this->object->setPoints((int) array_sum($max_points_array) / $this->object->getScala()->getNumItems());
 
         //Get Scala data from user Post
@@ -421,9 +420,9 @@ class assScalaQuestionGUI extends assQuestionGUI
         $this->addBasicQuestionFormProperties($form);
 
         //SCALA SECTION
-        $scala_form = new ilScalaFormPropertyGUI("scala", "scala");
+        $scala_form = new ilScalaFormPropertyGUI($this->lng->txt("scala"), "scala");
         $scala_form->setScala($this->object->getScala());
-        $scala_form->init('edit');
+        $scala_form->init("edit");
         $form->addItem($scala_form);
 
         $this->populateTaxonomyFormSection($form);

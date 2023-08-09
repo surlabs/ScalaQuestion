@@ -46,6 +46,9 @@ class Scala
     //Puntos de cada celda
     private array $evaluation_scala;
 
+    //Formatos de feedback en formato puntuacion_a_alcanzar_en_porcentaje => texto
+    private array $feedback_scala;
+
     /**
      * Crea el objeto Scala estableciendo sus identificadores
      */
@@ -53,99 +56,6 @@ class Scala
     {
         $this->setQuestionId($question_id);
         $this->setScalaId($scala_id);
-    }
-
-    /**
-     * Inicializa el objeto Scala, en base a los datos raw introducidos
-     * en el constructor
-     * @return bool
-     * @throws Exception
-     */
-    public function init2(): bool
-    {
-        /*
-        $error_message = '';
-        $column_index = 0;
-        $items_index = 0;
-
-        //Obtener datos desde Raw
-        try {
-            $columns = $this->getRawData()['columns'];
-            $items = $this->getRawData()['items'];
-            $evaluation = $this->getRawData()['evaluation'];
-        } catch (Exception $exception) {
-            $error_message = 'No raw data: ' . $exception->getMessage();
-        }
-
-        //Comprobación de formato de columnas
-        if (is_array($columns)) {
-            foreach ($columns as $index => $text) {
-                if (is_string($text)) {
-                    $column_index++;
-                } else {
-                    $error_message = 'columns malformed - column: ' . $index . ' : ' . $text;
-                }
-            }
-        } else {
-            $error_message = 'columns not array';
-            throw new Exception($error_message);
-        }
-
-        //Comprobación de formato de items
-        if (is_array($items)) {
-            foreach ($items as $index => $text) {
-                if (is_string($text)) {
-                    $items_index++;
-                } else {
-                    $error_message = 'items malformed - item: ' . $index . ' : ' . $text;
-                }
-            }
-        } else {
-            $error_message = 'items not array';
-            throw new Exception($error_message);
-        }
-
-        //establecimiento de los datos
-        if (!strlen($error_message)) {
-            if ($column_index == sizeof($columns) and $items_index == sizeof($items)) {
-                $this->setColumns($columns);
-                $this->setNumColumns(sizeof($columns));
-
-                $this->setItems($items);
-                $this->setNumItems(sizeof($items));
-            } else {
-                $error_message = 'the number of items or columns doesnt match the Scala values';
-                throw new Exception($error_message);
-            }
-        } else {
-            throw new Exception($error_message);
-        }
-
-        //Comprobación de formato de la Escala de evaluación
-        if (is_array($evaluation)) {
-            //reset error message
-            $evaluation_format_correct = true;
-
-            foreach ($items as $index_i => $text_i) {
-                foreach ($columns as $index_c => $text_c) {
-                    if (!isset($evaluation[$index_i][$index_c]) or !is_float($evaluation[$index_i][$index_c])) {
-                        $error_message = 'evaluation malformed - item: ' . $index_i . ' : ' . $index_c;
-                        $evaluation_format_correct = false;
-                        throw new Exception($error_message);
-                    }
-                }
-            }
-        } else {
-            $error_message = 'evaluation not array';
-            $evaluation_format_correct = false;
-            throw new Exception($error_message);
-        }
-
-        //establecimiento de los datos
-        if ($evaluation_format_correct) {
-            $this->setEvaluationScala($evaluation);
-        }*/
-        return true;
     }
 
     /**
@@ -162,6 +72,7 @@ class Scala
             'items' => $this->getItems(),
             'num_items' => $this->getNumItems(),
             'evaluation_scala' => $this->getEvaluationScala(),
+            'feedback_scala' => $this->getFeedbackScala(),
         ];
 
         $json = json_encode($data);
@@ -189,7 +100,7 @@ class Scala
             $scala->setItems($data['items']);
             $scala->setNumItems(count($data['items']));
             $scala->setEvaluationScala($data['evaluation_scala']);
-
+            $scala->setFeedbackScala($data['feedback_scala'] ?? []);
             return $scala;
         }
 
@@ -337,6 +248,22 @@ class Scala
     public function setEvaluationScala(array $evaluation_scala): void
     {
         $this->evaluation_scala = $evaluation_scala;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFeedbackScala(): array
+    {
+        return $this->feedback_scala;
+    }
+
+    /**
+     * @param array $feedback_scala
+     */
+    public function setFeedbackScala(array $feedback_scala): void
+    {
+        $this->feedback_scala = $feedback_scala;
     }
 
     /**
