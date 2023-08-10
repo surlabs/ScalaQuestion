@@ -245,6 +245,7 @@ class assScalaQuestionGUI extends assQuestionGUI
             $template->parseCurrentBlock();
         }
 
+        $points_scala = $this->object->getScala()->getScalaWithPoints();
         //Rellenamos el resto de filas
         for ($row = 1; $row < sizeof($scala); $row++) {
             // Set row block
@@ -265,6 +266,7 @@ class assScalaQuestionGUI extends assQuestionGUI
                 $template->setVariable("ROW", (string)$row);
                 $template->setVariable("COLUMN", (string)$col);
                 $template->setVariable("QUESTION_ID", $this->object->getId());
+                $template->setVariable("POINTS", $points_scala[$row][$col]);
 
                 // Parse the current cell
                 $template->parseCurrentBlock();
@@ -307,6 +309,8 @@ class assScalaQuestionGUI extends assQuestionGUI
         $show_manual_scoring = false,
         $show_question_text = true
     ): string {
+
+        return $this->getILIASPage("");
         // get the solution of the user for the active pass or from the last pass if allowed
         if (($active_id > 0) && (!$show_correct_solution)) {
             $solution = $this->object->getSolutionStored($active_id, $pass, true);

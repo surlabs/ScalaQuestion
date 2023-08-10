@@ -61,7 +61,6 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         $scala->setFeedbackScala($this->parseFeedback($question));
 
         $this->setScala($scala);
-
     }
 
     /**
@@ -292,6 +291,29 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
     }
 
     /**
+     * Calcula los puntos para el modo preview
+     * @param ilAssQuestionPreviewSession $previewSession
+     * @return int|mixed
+     */
+    public function calculateReachedPointsFromPreviewSession(ilAssQuestionPreviewSession $previewSession)
+    {
+        $participant_solution = $previewSession->getParticipantsSolution();
+
+        $scala = $this->getScala()->getScalaWithPoints();
+        $points = [];
+
+        for ($row = 1; $row < sizeof($scala); $row++) {
+            $points[] = $scala[$row][$participant_solution[$row - 1]];
+        }
+
+        $sum = array_sum($points);
+
+        $reachedPoints = $sum / $this->getScala()->getNumItems();
+
+        return $this->ensureNonNegativePoints($reachedPoints);
+    }
+
+    /**
      * Returns the question type of the question
      *
      * @return string The question type of the question
@@ -345,13 +367,15 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      */
     public function getSolutionSubmit(): array
     {
-        $value1 = trim(stripslashes($_POST['question' . $this->getId() . 'value1']));
-        $value2 = trim(stripslashes($_POST['question' . $this->getId() . 'value2']));
+        $user_solution = [];
+        foreach ($this->getScala()->getItems() as $item_index => $item_text) {
+            if (isset($_POST["scala_row_" . ($item_index + 1)])) {
+                $chosen_column = explode("_", $_POST["scala_row_" . ($item_index + 1)]);
+                $user_solution[$item_index] = $chosen_column[1];
+            }
+        }
 
-        return array(
-            'value1' => empty($value1) ? null : $value1,
-            'value2' => empty($value2) ? null : (float) $value2
-        );
+        return $user_solution;
     }
 
     /**
@@ -379,7 +403,8 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      * @param $inputString
      * @return array|string|string[]|null
      */
-    function parseText($inputString) {
+    function parseText($inputString)
+    {
         $pattern = '/\[\[feedback:\d+\]\].*?\[\[\/feedback\]\]/s';
         return preg_replace($pattern, '', $inputString);
     }
