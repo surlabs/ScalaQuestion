@@ -35,6 +35,12 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
     private Scala $scala;
 
     /**
+     * @var float Necesitamos hacer este atributo de clase para guardar el valor de calculated reached
+     *            points for preview para ser usado en get specific feedback (en preview)
+     */
+    private float $reached_points_for_preview = 0.0;
+
+    /**
      * Constructor
      *
      * The constructor takes possible arguments and creates an instance of the question object.
@@ -309,6 +315,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         $sum = array_sum($points);
 
         $reachedPoints = $sum / $this->getScala()->getNumItems();
+        $this->reached_points_for_preview = $reachedPoints;
 
         return $this->ensureNonNegativePoints($reachedPoints);
     }
@@ -424,5 +431,23 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
     {
         $this->scala = $scala;
     }
+
+    /**
+     * @return float
+     */
+    public function getReachedPointsForPreview(): float
+    {
+        return $this->reached_points_for_preview;
+    }
+
+    /**
+     * @param float $reached_points_for_preview
+     */
+    public function setReachedPointsForPreview(float $reached_points_for_preview): void
+    {
+        $this->reached_points_for_preview = $reached_points_for_preview;
+    }
+
+
 
 }

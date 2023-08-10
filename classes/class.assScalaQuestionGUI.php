@@ -404,9 +404,19 @@ class assScalaQuestionGUI extends assQuestionGUI
      */
     public function getSpecificFeedbackOutput($userSolution): string
     {
-        // By default, no answer specific feedback is defined
-        $output = '';
-        return $this->object->prepareTextareaOutput($output, true);
+        $max_points = $this->object->getPoints();
+        $reached_points_por_preview = $this->object->getReachedPointsForPreview();
+        $reached_percent = (int) (($reached_points_por_preview / $max_points) * 100);
+        $feedback_scala = $this->object->getScala()->getFeedbackScala();
+        $feedback = "";
+
+        foreach ($feedback_scala as $minimal_percent_for_this_feedback => $feedback_text) {
+            if ($minimal_percent_for_this_feedback < $reached_percent) {
+                $feedback = $feedback_text;
+            }
+        }
+
+        return $this->object->prepareTextareaOutput($feedback, true);
     }
 
     /**
