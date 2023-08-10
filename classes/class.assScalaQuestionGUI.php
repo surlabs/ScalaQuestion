@@ -214,19 +214,65 @@ class assScalaQuestionGUI extends assQuestionGUI
      */
     public function getPreview($show_question_only = false, $show_inline_feedback = false): string
     {
+        global $DIC;
+
         $solution = is_object($this->getPreviewSession()) ? $this->getPreviewSession()->getParticipantsSolution(
         ) : array('value1' => null, 'value2' => null);
 
         // Fill the template with a preview version of the question
         $template = $this->plugin->getTemplate("tpl.il_as_qpl_xqscala_output.html");
-        $question_text = $this->object->getQuestion();
-        $template->setVariable("QUESTIONTEXT", $this->object->prepareTextareaOutput($question_text, true));
-        $template->setVariable("QUESTION_ID", $this->object->getId());
-        $template->setVariable("LABEL_VALUE1", $this->plugin->txt('label_value1'));
-        $template->setVariable("LABEL_VALUE2", $this->plugin->txt('label_value2'));
 
-        $template->setVariable("VALUE1", ilUtil::prepareFormOutput($solution['value1']));
-        $template->setVariable("VALUE2", ilUtil::prepareFormOutput($solution['value2']));
+        // obtenemos el texto sin placeholders de feedback
+        $question_text = $this->object->parseText($this->object->getQuestion());
+
+        $template->setVariable("QUESTIONTEXT", $this->object->prepareTextareaOutput($question_text, true));
+
+        //añadimos el CSS
+        $DIC->globalScreen()->layout()->meta()->addCss(
+            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/custom_form_properties/tpl.scala_form_property.css'
+        );
+
+        //Rellenamos los headers de las columnas
+        $scala = $this->object->getScala()->getBlankScala();
+        for ($col = 0; $col < sizeof($scala[0]); $col++) {
+            // Set cell block
+            $template->setCurrentBlock('header_row');
+
+            // Set the content for the cell
+            $template->setVariable("HEADER_TEXT", $scala[0][$col]);
+
+            // Parse the current cell
+            $template->parseCurrentBlock();
+        }
+
+        //Rellenamos el resto de filas
+        for ($row = 1; $row < sizeof($scala); $row++) {
+            // Set row block
+            $template->setCurrentBlock('scala_rows');
+
+            //Rellenamos el header de cada fila
+            $template->setCurrentBlock('scala_header');
+            $template->setVariable("HEADER_TEXT", $scala[$row][0]);
+
+            $template->parseCurrentBlock();
+
+            // Iterate over the matrix columns
+            for ($col = 1; $col < sizeof($scala[$row]); $col++) {
+                // Set cell block
+                $template->setCurrentBlock('scala_cells');
+
+                // Set the content for the cell
+                $template->setVariable("ROW", (string)$row);
+                $template->setVariable("COLUMN", (string)$col);
+                $template->setVariable("QUESTION_ID", $this->object->getId());
+
+                // Parse the current cell
+                $template->parseCurrentBlock();
+            }
+            $template->setCurrentBlock('scala_rows');
+            // Parse the current row
+            $template->parseCurrentBlock();
+        }
 
         $question_output = $template->get();
         if (!$show_question_only) {

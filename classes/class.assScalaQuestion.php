@@ -375,6 +375,16 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
     }
 
     /**
+     * Devuelve el texto de la pregunta sin placeholders de feedback
+     * @param $inputString
+     * @return array|string|string[]|null
+     */
+    function parseText($inputString) {
+        $pattern = '/\[\[feedback:\d+\]\].*?\[\[\/feedback\]\]/s';
+        return preg_replace($pattern, '', $inputString);
+    }
+
+    /**
      * @return Scala
      */
     public function getScala(): Scala
