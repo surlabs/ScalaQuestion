@@ -216,8 +216,8 @@ class assScalaQuestionGUI extends assQuestionGUI
     {
         global $DIC;
 
-        $solution = is_object($this->getPreviewSession()) ? $this->getPreviewSession()->getParticipantsSolution(
-        ) : array('value1' => null, 'value2' => null);
+        $user_solution = is_object($this->getPreviewSession()) ? $this->getPreviewSession()->getParticipantsSolution(
+        ) : array();
 
         // Fill the template with a preview version of the question
         $template = $this->plugin->getTemplate("tpl.il_as_qpl_xqscala_output.html");
@@ -266,7 +266,10 @@ class assScalaQuestionGUI extends assQuestionGUI
                 $template->setVariable("ROW", (string)$row);
                 $template->setVariable("COLUMN", (string)$col);
                 $template->setVariable("QUESTION_ID", $this->object->getId());
-                $template->setVariable("POINTS", $points_scala[$row][$col]);
+
+                if ($user_solution[$row - 1] == $col) {
+                    $template->setVariable("CHECKED", "checked");
+                }
 
                 // Parse the current cell
                 $template->parseCurrentBlock();
