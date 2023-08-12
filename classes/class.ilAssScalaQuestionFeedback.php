@@ -38,6 +38,5 @@ class ilAssScalaQuestionFeedback extends ilAssMultiOptionQuestionFeedback
      */
     public function getAnswerOptionsByAnswerIndex()
     {
-        var_dump($this->questionOBJ->getScala());exit;
     }
 }

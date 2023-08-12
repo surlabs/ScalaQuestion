@@ -229,28 +229,19 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
             $pass = ilObjTest::_getPass($active_id);
         }
 
-        // get the submitted solution
-        $solution = $this->getSolutionSubmit();
+        // get the submitted solution, force post not sending active id and pass
+        $user_post_solution = $this->getSolutionSubmit();
+        $json = json_encode($user_post_solution);
+
         $entered_values = 0;
 
-        // save the submitted values avoiding race conditions
+        //Save user test solution
         $this->getProcessLocker()->executeUserSolutionUpdateLockOperation(
-            function () use (&$entered_values, $solution, $active_id, $pass, $authorized) {
-                $entered_values = isset($solution['value1']) || isset($solution['value2']);
-
-                if ($authorized) {
-                    // a new authorized solution will delete the old one and the intermediate
-                    $this->removeExistingSolutions($active_id, $pass);
-                } elseif ($entered_values) {
-                    // a new intermediate solution will only delete a previous one
-                    $this->removeIntermediateSolution($active_id, $pass);
-                }
-
-                if ($entered_values) {
-                    $this->saveCurrentSolution(
-                        $active_id, $pass, $solution['value1'], $solution['value2'], $authorized, time()
-                    );
-                }
+            function () use (&$entered_values, $active_id, $pass, $authorized, $json) {
+                //Remove previous solution
+                $this->removeCurrentSolution($active_id, $pass, $authorized);
+                //Add current solution
+                $entered_values = $this->saveCurrentSolution($active_id, $pass, $json, $this->getScala()->toJSON());
             }
         );
 
@@ -272,6 +263,28 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
     }
 
     /**
+     * Calcula los puntos para preview y test
+     * @param $participant_solution
+     * @return float
+     */
+    public function calculatePoints($participant_solution): float
+    {
+        $scala = $this->getScala()->getScalaWithPoints();
+        $points = [];
+
+        for ($row = 1; $row < sizeof($scala); $row++) {
+            $points[] = $scala[$row][$participant_solution[$row - 1]];
+        }
+
+        $sum = array_sum($points);
+
+        $reached_points = $sum / $this->getScala()->getNumItems();
+        $this->reached_points_for_preview = $reached_points;
+
+        return (float) $reached_points;
+    }
+
+    /**
      * Returns the points, a learner has reached answering the question.
      * The points are calculated from the given answers.
      *
@@ -289,11 +302,14 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         $authorizedSolution = true,
         $returndetails = false
     ): float {
-        if ($returndetails) {
-            throw new ilTestException('return details not implemented for ' . __METHOD__);
-        }
+        //force db as we are in test
+        $solution_from_db = $this->getSolutionSubmit($active_id, $pass)[0];
 
-        return 1.0;
+        $participant_solution = json_decode($solution_from_db["value1"]);
+
+        $reached_points = $this->calculatePoints($participant_solution);
+
+        return $this->ensureNonNegativePoints($reached_points);
     }
 
     /**
@@ -305,19 +321,9 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
     {
         $participant_solution = $previewSession->getParticipantsSolution();
 
-        $scala = $this->getScala()->getScalaWithPoints();
-        $points = [];
+        $reached_points = $this->calculatePoints($participant_solution);
 
-        for ($row = 1; $row < sizeof($scala); $row++) {
-            $points[] = $scala[$row][$participant_solution[$row - 1]];
-        }
-
-        $sum = array_sum($points);
-
-        $reachedPoints = $sum / $this->getScala()->getNumItems();
-        $this->reached_points_for_preview = $reachedPoints;
-
-        return $this->ensureNonNegativePoints($reachedPoints);
+        return $this->ensureNonNegativePoints($reached_points);
     }
 
     /**
@@ -413,8 +419,12 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      *
      * @return    array    ('value1' => string|null, 'value2' => float|null)
      */
-    public function getSolutionSubmit(): array
+    public function getSolutionSubmit($active_id = null, $pass = null): array
     {
+        if ($active_id != null and $pass != null) {
+            return $this->getUserSolutionPreferingIntermediate($active_id, $pass);
+        }
+
         $user_solution = [];
         foreach ($this->getScala()->getItems() as $item_index => $item_text) {
             if (isset($_POST["scala_row_" . ($item_index + 1)])) {
@@ -488,7 +498,5 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
     {
         $this->reached_points_for_preview = $reached_points_for_preview;
     }
-
-
 
 }
