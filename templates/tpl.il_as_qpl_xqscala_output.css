@@ -1,0 +1,54 @@
+/* Estilos básicos */
+.ilc_question_matrix {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    color: #4c6586;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(76, 101, 134, 0.2);
+}
+
+.ilc_qtitle_Title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    padding: 15px;
+    color: #4c6586;
+    background-color: #e6ebf2;
+}
+
+.scala-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    transition: background-color 0.3s;
+}
+
+.scala-table td {
+    border: 1px solid #4c6586;
+    padding: 10px 15px;
+    text-align: center;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+.scala-table tr:hover td {
+    background-color: #e6ebf2;
+}
+
+.scala-table input[type="radio"] {
+    margin: 0;
+    vertical-align: middle;
+    appearance: none;
+    border: 1px solid #4c6586;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    outline: none;
+    transition: background-color 0.3s;
+}
+
+.scala-table input[type="radio"]:checked {
+    background-color: #4c6586;
+    box-shadow: 0 0 0 5px #e6ebf2;
+}

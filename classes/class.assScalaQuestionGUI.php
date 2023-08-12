@@ -197,8 +197,14 @@ class assScalaQuestionGUI extends assQuestionGUI
 
         //añadimos el CSS
         $DIC->globalScreen()->layout()->meta()->addCss(
-            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/custom_form_properties/tpl.scala_form_property.css'
+            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/tpl.il_as_qpl_xqscala_output.css'
         );
+
+        //añadimos el Javascript
+        $DIC->globalScreen()->layout()->meta()->addJs(
+            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/tpl.il_as_qpl_xqscala_output.js'
+        );
+
 
         //Rellenamos los headers de las columnas
         $scala = $this->object->getScala()->getBlankScala();
@@ -277,8 +283,14 @@ class assScalaQuestionGUI extends assQuestionGUI
 
         //añadimos el CSS
         $DIC->globalScreen()->layout()->meta()->addCss(
-            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/custom_form_properties/tpl.scala_form_property.css'
+            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/tpl.il_as_qpl_xqscala_output.css'
         );
+
+        //añadimos el Javascript
+        $DIC->globalScreen()->layout()->meta()->addJs(
+            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/tpl.il_as_qpl_xqscala_output.js'
+        );
+
 
         //Rellenamos los headers de las columnas
         $scala = $this->object->getScala()->getBlankScala();
@@ -384,8 +396,14 @@ class assScalaQuestionGUI extends assQuestionGUI
 
         //añadimos el CSS
         $DIC->globalScreen()->layout()->meta()->addCss(
-            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/custom_form_properties/tpl.scala_form_property.css'
+            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/tpl.il_as_qpl_xqscala_output.css'
         );
+
+        //añadimos el Javascript
+        $DIC->globalScreen()->layout()->meta()->addJs(
+            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/tpl.il_as_qpl_xqscala_output.js'
+        );
+
 
         //Rellenamos los headers de las columnas
         $scala = $this->object->getScala()->getBlankScala();
