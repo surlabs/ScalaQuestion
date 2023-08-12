@@ -356,7 +356,48 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      */
     public function duplicate($for_test = true, $title = "", $author = "", $owner = "", $testObjId = null): int
     {
-        return -1;
+        if ($this->id <= 0) {
+            // The question has not been saved. It cannot be duplicated
+            return 0;
+        }
+        // duplicate the question in database
+        $this_id = $this->getId();
+        $thisObjId = $this->getObjId();
+
+        $clone = $this;
+        include_once("./Modules/TestQuestionPool/classes/class.assQuestion.php");
+        $original_id = assQuestion::_getOriginalId($this->id);
+        $clone->id = -1;
+
+        if ((int) $testObjId > 0) {
+            $clone->setObjId($testObjId);
+        }
+
+        if ($title) {
+            $clone->setTitle($title);
+        }
+
+        if ($author) {
+            $clone->setAuthor($author);
+        }
+        if ($owner) {
+            $clone->setOwner($owner);
+        }
+        if ($for_test) {
+            $clone->saveToDb($original_id);
+        } else {
+            $clone->saveToDb();
+        }
+
+        // copy question page content
+        $clone->copyPageOfQuestion($this_id);
+
+        // copy XHTML media objects
+        $clone->copyXHTMLMediaObjectsOfQuestion($this_id);
+
+        $clone->onDuplicate($thisObjId, $this_id, $clone->getObjId(), $clone->getId());
+
+        return (int) $clone->id;
     }
 
     /* Other overwritten methods */
