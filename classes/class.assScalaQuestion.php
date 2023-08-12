@@ -421,14 +421,14 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      */
     public function getSolutionSubmit($active_id = null, $pass = null): array
     {
-        if ($active_id != null and $pass != null) {
+        if ($active_id != null and $pass != null and $active_id != 0) {
             return $this->getUserSolutionPreferingIntermediate($active_id, $pass);
         }
 
         $user_solution = [];
         foreach ($this->getScala()->getItems() as $item_index => $item_text) {
-            if (isset($_POST["scala_row_" . ($item_index + 1)])) {
-                $chosen_column = explode("_", $_POST["scala_row_" . ($item_index + 1)]);
+            if (isset($_POST["scala_qid_" . $this->getId() . "_row_" . ($item_index + 1)])) {
+                $chosen_column = explode("_", $_POST["scala_qid_" . $this->getId() . "_row_" . ($item_index + 1)]);
                 $user_solution[$item_index] = $chosen_column[1];
             }
         }

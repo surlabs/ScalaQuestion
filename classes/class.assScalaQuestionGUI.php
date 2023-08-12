@@ -361,6 +361,10 @@ class assScalaQuestionGUI extends assQuestionGUI
         $show_question_text = true
     ): string {
 
+        if($active_id == 0){
+        return "";
+        }
+
         global $DIC;
 
         if (is_null($pass)) {
