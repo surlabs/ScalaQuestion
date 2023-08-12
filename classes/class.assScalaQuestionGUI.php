@@ -361,103 +361,102 @@ class assScalaQuestionGUI extends assQuestionGUI
         $show_question_text = true
     ): string {
 
-        return $this->getILIASPage("");
-        // get the solution of the user for the active pass or from the last pass if allowed
-        if (($active_id > 0) && (!$show_correct_solution)) {
-            $solution = $this->object->getSolutionStored($active_id, $pass, true);
-            $value1 = isset($solution["value1"]) ? $solution["value1"] : "";
-            $value2 = isset($solution["value2"]) ? $solution["value2"] : "";
-        } else {
-            // show the correct solution
-            $value1 = $this->plugin->txt("any_text");
-            $value2 = $this->object->getMaximumPoints();
+        global $DIC;
+
+        if (is_null($pass)) {
+            $pass = ilObjTest::_getPass($active_id);
         }
 
-        // get the solution template
-        $template = $this->plugin->getTemplate("tpl.il_as_qpl_xqscala_output_solution.html");
-        $solutiontemplate = new ilTemplate(
-            "tpl.il_as_tst_solution_output.html", true, true, "Modules/TestQuestionPool"
+        $participant_solution = $this->object->getUserSolutionPreferingIntermediate($active_id, $pass)[0];
+        $user_solution = json_decode($participant_solution["value1"]);
+
+        // Fill the template with a preview version of the question
+        $template = $this->plugin->getTemplate("tpl.il_as_qpl_xqscala_output.html");
+
+        // obtenemos el texto sin placeholders de feedback
+        $question_text = $this->object->parseText($this->object->getQuestion());
+
+        $template->setVariable("QUESTIONTEXT", $this->object->prepareTextareaOutput($question_text, true));
+
+        //añadimos el CSS
+        $DIC->globalScreen()->layout()->meta()->addCss(
+            'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/custom_form_properties/tpl.scala_form_property.css'
         );
 
-        if (($active_id > 0) && (!$show_correct_solution)) {
-            if ($graphicalOutput) {
-                // copied from assNumericGUI, yet not really understood
-                if ($this->object->getStep() === null) {
-                    $reached_points = $this->object->getReachedPoints($active_id, $pass);
-                } else {
-                    $reached_points = $this->object->calculateReachedPoints($active_id, $pass);
+        //Rellenamos los headers de las columnas
+        $scala = $this->object->getScala()->getBlankScala();
+        for ($col = 0; $col < sizeof($scala[0]); $col++) {
+            // Set cell block
+            $template->setCurrentBlock('header_row');
+
+            // Set the content for the cell
+            $template->setVariable("HEADER_TEXT", $scala[0][$col]);
+
+            // Parse the current cell
+            $template->parseCurrentBlock();
+        }
+
+        $points_scala = $this->object->getScala()->getScalaWithPoints();
+        //Rellenamos el resto de filas
+        for ($row = 1; $row < sizeof($scala); $row++) {
+            // Set row block
+            $template->setCurrentBlock('scala_rows');
+
+            //Rellenamos el header de cada fila
+            $template->setCurrentBlock('scala_header');
+            $template->setVariable("HEADER_TEXT", $scala[$row][0]);
+
+            $template->parseCurrentBlock();
+
+            // Iterate over the matrix columns
+            for ($col = 1; $col < sizeof($scala[$row]); $col++) {
+                // Set cell block
+                $template->setCurrentBlock('scala_cells');
+
+                // Set the content for the cell
+                $template->setVariable("ROW", (string)$row);
+                $template->setVariable("COLUMN", (string)$col);
+                $template->setVariable("QUESTION_ID", $this->object->getId());
+
+                if ($user_solution[$row - 1] == $col) {
+                    $template->setVariable("CHECKED", "checked");
+                }else{
+                    $template->setVariable("DISABLE", "disabled");
                 }
 
-                // output of ok/not ok icons for user entered solutions
-                // in this example we have ony one relevant input field (points)
-                // so we just need to set the icon beneath this field
-                // question types with partial answers may have a more complex output
-                if ($reached_points == $this->object->getMaximumPoints()) {
-                    $template->setCurrentBlock("icon_ok");
-                    $template->setVariable("ICON_OK", ilUtil::getImagePath("icon_ok.svg"));
-                    $template->setVariable("TEXT_OK", $this->lng->txt("answer_is_right"));
-                    $template->parseCurrentBlock();
-                } else {
-                    $template->setCurrentBlock("icon_ok");
-                    $template->setVariable("ICON_NOT_OK", ilUtil::getImagePath("icon_not_ok.svg"));
-                    $template->setVariable("TEXT_NOT_OK", $this->lng->txt("answer_is_wrong"));
-                    $template->parseCurrentBlock();
-                }
+
+                // Parse the current cell
+                $template->parseCurrentBlock();
             }
+            $template->setCurrentBlock('scala_rows');
+            // Parse the current row
+            $template->parseCurrentBlock();
         }
 
-        // fill the template variables
-        // adapt this to your structure of answers
-        $template->setVariable("LABEL_VALUE1", $this->plugin->txt('label_value1'));
-        $template->setVariable("LABEL_VALUE2", $this->plugin->txt('label_value2'));
+        $question_output = $template->get();
 
-        $template->setVariable(
-            "VALUE1", empty($value1) ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : ilUtil::prepareFormOutput($value1)
-        );
-        $template->setVariable(
-            "VALUE2", empty($value2) ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : ilUtil::prepareFormOutput($value2)
-        );
-
-        $questiontext = $this->object->getQuestion();
-        if ($show_question_text == true) {
-            $template->setVariable("QUESTIONTEXT", $this->object->prepareTextareaOutput($questiontext, true));
-        }
-
-        $questionoutput = $template->get();
-
-        $feedback = ($show_feedback && !$this->isTestPresentationContext()) ? $this->getGenericFeedbackOutput(
-            $active_id, $pass
-        ) : "";
-        if (strlen($feedback)) {
-            $cssClass = ($this->hasCorrectSolution($active_id, $pass) ?
-                ilAssQuestionFeedback::CSS_CLASS_FEEDBACK_CORRECT : ilAssQuestionFeedback::CSS_CLASS_FEEDBACK_WRONG
-            );
-
-            $solutiontemplate->setVariable("ILC_FB_CSS_CLASS", $cssClass);
-            $solutiontemplate->setVariable("FEEDBACK", $this->object->prepareTextareaOutput($feedback, true));
-        }
-        $solutiontemplate->setVariable("SOLUTION_OUTPUT", $questionoutput);
-
-        $solution_output = $solutiontemplate->get();
         if (!$show_question_only) {
             // get page object output
-            $solution_output = $this->getILIASPage($solution_output);
+            $question_output = $this->getILIASPage($question_output . $this->getSpecificFeedbackOutput($user_solution, $this->object->getReachedPoints($active_id,$pass)));
         }
-        return $solution_output;
+        return $question_output;
     }
 
     /**
-     * Returns the answer specific feedback for the question
+     * Returns the answer specific feedback for the question preview
      *
      * @param array $userSolution Array with the user solutions
      * @return string HTML Code with the answer specific feedback
      * @access public
      */
-    public function getSpecificFeedbackOutput($userSolution): string
+    public function getSpecificFeedbackOutput($userSolution, $reached_points = null): string
     {
         $max_points = $this->object->getPoints();
-        $reached_points_por_preview = $this->object->getReachedPointsForPreview();
-        $reached_percent = (int) (($reached_points_por_preview / $max_points) * 100);
+        if( $reached_points == null){
+            $reached_points = $this->object->getReachedPointsForPreview();
+        }
+
+        $reached_percent = (int) (($reached_points / $max_points) * 100);
         $feedback_scala = $this->object->getScala()->getFeedbackScala();
         $feedback = "";
 
