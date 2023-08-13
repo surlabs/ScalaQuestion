@@ -14,7 +14,9 @@
 
             <!-- BEGIN scala_cells -->
             <div class="cell" data-row-index="{ROW_INDEX}" data-col-index="{COLUMN_INDEX}">
-                <input type="radio" id="qid_{QUESTION_ID}_scala_cell_{ROW}_{COLUMN}" name="scala_qid_{QUESTION_ID}_row_{ROW}" value="{ROW}_{COLUMN}" {CHECKED} {DISABLE}>
+                <div class="radio-container">
+                    <input type="radio" id="qid_{QUESTION_ID}_scala_cell_{ROW}_{COLUMN}" name="scala_qid_{QUESTION_ID}_row_{ROW}" value="{ROW}_{COLUMN}" {CHECKED} {DISABLE}>
+                </div>
             </div>
             <!-- END scala_cells -->
         </div>

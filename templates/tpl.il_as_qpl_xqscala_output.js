@@ -28,3 +28,24 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    let radioButtons = document.querySelectorAll('.scala-table input[type="radio"]');
+
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Primero, quitar la clase 'checked' de cualquier otra celda en la misma fila
+            let row = this.closest('.row');
+            let cells = row.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.classList.remove('checked');
+            });
+
+            // Luego, añadir la clase 'checked' al contenedor de la celda del radio button seleccionado
+            let cellContainer = this.closest('.cell');
+            if (this.checked) {
+                cellContainer.classList.add('checked');
+            }
+        });
+    });
+});
