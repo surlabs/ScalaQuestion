@@ -568,15 +568,8 @@ class assScalaQuestionGUI extends assQuestionGUI
         $form->setTitle($this->outQuestionType());
         $form->setId("xqscala_edit");
 
-        $this->addBasicQuestionFormProperties($form);
+        $form = $this->addQuestionFormProperties($form);
 
-        //SCALA SECTION
-        $scala_form = new ilScalaFormPropertyGUI($this->lng->txt("scala"), "scala");
-        $scala_form->setScala($this->object->getScala());
-        $scala_form->init("edit");
-        $form->addItem($scala_form);
-
-        $this->populateTaxonomyFormSection($form);
         $this->addQuestionFormCommandButtons($form);
 
         $errors = false;
@@ -595,6 +588,82 @@ class assScalaQuestionGUI extends assQuestionGUI
             $this->tpl->setVariable("QUESTION_DATA", $form->getHTML());
         }
         return $errors;
+    }
+
+    /**
+     * @param $form ilPropertyFormGUI
+     * @return ilPropertyFormGUI
+     */
+    public function addQuestionFormProperties($form): ilPropertyFormGUI
+    {
+        global $DIC;
+
+        // title
+        $title = new ilTextInputGUI($this->lng->txt("title"), "title");
+        $title->setMaxLength(100);
+        $title->setValue($this->object->getTitle());
+        $title->setRequired(true);
+        $form->addItem($title);
+
+        if (!$this->object->getSelfAssessmentEditingMode()) {
+            // author
+            $author = new ilTextInputGUI($this->lng->txt("author"), "author");
+            $author->setValue($this->object->getAuthor());
+            $author->setRequired(true);
+            $form->addItem($author);
+
+            // description
+            $description = new ilTextInputGUI($this->lng->txt("description"), "comment");
+            $description->setValue($this->object->getComment());
+            $description->setRequired(false);
+            $form->addItem($description);
+        } else {
+            // author as hidden field
+            $hi = new ilHiddenInputGUI("author");
+            $author = ilUtil::prepareFormOutput($this->object->getAuthor());
+            if (trim($author) == "") {
+                $author = "-";
+            }
+            $hi->setValue($author);
+            $form->addItem($hi);
+        }
+
+        // lifecycle
+        $lifecycle = new ilSelectInputGUI($this->lng->txt('qst_lifecycle'), 'lifecycle');
+        $lifecycle->setOptions($this->object->getLifecycle()->getSelectOptions($this->lng));
+        $lifecycle->setValue($this->object->getLifecycle()->getIdentifier());
+        $form->addItem($lifecycle);
+
+        //SCALA SECTION
+        $scala_form = new ilScalaFormPropertyGUI($this->lng->txt("qpl_qst_xqscala_scala"), "scala");
+        $scala_form->setScala($this->object->getScala());
+        $scala_form->init("edit");
+        $form->addItem($scala_form);
+
+        // questiontext -> feedback
+        $question = new ilTextAreaInputGUI($this->lng->txt("feedback"), "question");
+        $question->setValue($this->object->getQuestion());
+        $question->setRequired(true);
+        $question->setRows(10);
+
+        if (!$this->object->getSelfAssessmentEditingMode()) {
+            if ($this->object->getAdditionalContentEditingMode() != assQuestion::ADDITIONAL_CONTENT_EDITING_MODE_IPE) {
+                $question->setUseRte(true);
+                include_once "./Services/AdvancedEditing/classes/class.ilObjAdvancedEditing.php";
+                $question->setRteTags(ilObjAdvancedEditing::_getUsedHTMLTags("assessment"));
+                $question->addPlugin("latex");
+                $question->addButton("latex");
+                $question->addButton("pastelatex");
+                $question->setRTESupport($this->object->getId(), "qpl", "assessment");
+            }
+        } else {
+            require_once 'Modules/TestQuestionPool/classes/questions/class.ilAssSelfAssessmentQuestionFormatter.php';
+            $question->setRteTags(ilAssSelfAssessmentQuestionFormatter::getSelfAssessmentTags());
+            $question->setUseTagsForRteOnly(false);
+        }
+        $form->addItem($question);
+
+        return $form;
     }
 
     /**
