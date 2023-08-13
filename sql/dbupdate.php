@@ -63,3 +63,16 @@ if (!$db->tableExists('xqscala_question')) {
     $db->addPrimaryKey('xqscala_question', array('question_id'));
 }
 ?>
+<#3>
+<?php
+/*
+ * Create Index
+ */
+global $DIC;
+$db = $DIC->database();
+if ($db->tableExists('xqscala_question')) {
+    if (!$db->indexExistsByFields('xqscala_question', array('question_id', 'scala'))) {
+        $db->addIndex('xqscala_question', array('question_id', 'scala'), 'i1', FALSE);
+    }
+}
+?>
