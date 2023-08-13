@@ -71,8 +71,8 @@ if (!$db->tableExists('xqscala_question')) {
 global $DIC;
 $db = $DIC->database();
 if ($db->tableExists('xqscala_question')) {
-    if (!$db->indexExistsByFields('xqscala_question', array('question_id', 'scala'))) {
-        $db->addIndex('xqscala_question', array('question_id', 'scala'), 'i1', FALSE);
+    if (!$db->indexExistsByFields('xqscala_question', array('question_id'))) {
+        $db->addIndex('xqscala_question', array('question_id'), 'i1', FALSE);
     }
 }
 ?>
