@@ -376,8 +376,15 @@ class assScalaQuestionGUI extends assQuestionGUI
         $show_manual_scoring = false,
         $show_question_text = true
     ): string {
+
         if ($active_id == 0) {
-            return "";
+            //TODO LNG
+            return "no active id";
+        }
+
+        if($show_correct_solution){
+            //TODO LNG
+            return "no correct solution for this question type";
         }
 
         global $DIC;
@@ -387,6 +394,12 @@ class assScalaQuestionGUI extends assQuestionGUI
         }
 
         $participant_solution = $this->object->getUserSolutionPreferingIntermediate($active_id, $pass)[0];
+
+        if (!isset($participant_solution["value1"])) {
+            //TODO LNG
+            return "not answered";
+        }
+
         $user_solution = json_decode($participant_solution["value1"]);
 
         // Fill the template with a preview version of the question
