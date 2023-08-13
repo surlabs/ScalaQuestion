@@ -20,6 +20,10 @@
     box-sizing: border-box; /* Esto hace que el padding y el borde estén incluidos en el ancho total de la celda. */
 }
 
+.cell.highlighted {
+    background-color: rgba(76, 101, 134, 0.1);
+}
+
 .header-row{
     padding: 15px 20px;
     font-weight: bold;

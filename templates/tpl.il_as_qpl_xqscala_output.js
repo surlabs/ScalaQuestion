@@ -1,27 +1,30 @@
-document.querySelectorAll('.scala-table .row:not(:first-child) .cell').forEach(cell => {
-    cell.addEventListener('mouseenter', function() {
-        // Highlight the row
-        cell.parentElement.classList.add('hover-row');
+document.addEventListener("DOMContentLoaded", function() {
+    let cells = document.querySelectorAll(".scala-table .cell");
+    cells.forEach(function(cell) {
+        cell.addEventListener("mouseenter", function() {
+            let colIndex = cell.getAttribute("data-col-index");
+            let rowIndex = cell.getAttribute("data-row-index");
 
-        // Highlight the column
-        const colIndex = Array.from(cell.parentNode.children).indexOf(cell);
-        document.querySelectorAll('.scala-table .row:not(:first-child)').forEach(row => {
-            if (row.children[colIndex]) {
-                row.children[colIndex].classList.add('hover-col');
-            }
+            // Celda de encabezado de columna
+            let headerCell = document.querySelector(".header-cell[data-col-index='" + colIndex + "']");
+            // Celda de encabezado de fila
+            let rowHeaderCell = cell.closest('.row').querySelector('.row-header-cell');
+
+            cell.classList.add("highlighted");
+            if (headerCell) headerCell.classList.add("highlighted");
+            if (rowHeaderCell) rowHeaderCell.classList.add("highlighted");
         });
-    });
 
-    cell.addEventListener('mouseleave', function() {
-        // Remove highlight from the row
-        cell.parentElement.classList.remove('hover-row');
+        cell.addEventListener("mouseleave", function() {
+            let colIndex = cell.getAttribute("data-col-index");
+            let rowIndex = cell.getAttribute("data-row-index");
 
-        // Remove highlight from the column
-        const colIndex = Array.from(cell.parentNode.children).indexOf(cell);
-        document.querySelectorAll('.scala-table .row:not(:first-child)').forEach(row => {
-            if (row.children[colIndex]) {
-                row.children[colIndex].classList.remove('hover-col');
-            }
+            let headerCell = document.querySelector(".header-cell[data-col-index='" + colIndex + "']");
+            let rowHeaderCell = cell.closest('.row').querySelector('.row-header-cell');
+
+            cell.classList.remove("highlighted");
+            if (headerCell) headerCell.classList.remove("highlighted");
+            if (rowHeaderCell) rowHeaderCell.classList.remove("highlighted");
         });
     });
 });

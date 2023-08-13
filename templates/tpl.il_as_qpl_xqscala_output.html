@@ -2,18 +2,18 @@
     <div class="scala-table">
         <div class="row">
             <!-- BEGIN header_row -->
-            <div class="cell">{HEADER_TEXT}</div>
+            <div class="cell header-cell" data-col-index="{COLUMN_INDEX}">{HEADER_TEXT}</div>
             <!-- END header_row -->
         </div>
 
         <!-- BEGIN scala_rows -->
         <div class="row">
             <!-- BEGIN scala_header -->
-            <div class="cell">{HEADER_TEXT}</div>
+            <div class="cell row-header-cell">{HEADER_TEXT}</div>
             <!-- END scala_header -->
 
             <!-- BEGIN scala_cells -->
-            <div class="cell">
+            <div class="cell" data-row-index="{ROW_INDEX}" data-col-index="{COLUMN_INDEX}">
                 <input type="radio" id="qid_{QUESTION_ID}_scala_cell_{ROW}_{COLUMN}" name="scala_qid_{QUESTION_ID}_row_{ROW}" value="{ROW}_{COLUMN}" {CHECKED} {DISABLE}>
             </div>
             <!-- END scala_cells -->

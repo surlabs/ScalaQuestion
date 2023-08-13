@@ -179,7 +179,6 @@ class assScalaQuestionGUI extends assQuestionGUI
         $use_post_solutions = false,
         $show_specific_inline_feedback = false
     ): string {
-
         global $DIC;
 
         if (is_null($pass)) {
@@ -205,7 +204,6 @@ class assScalaQuestionGUI extends assQuestionGUI
             'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/tpl.il_as_qpl_xqscala_output.js'
         );
 
-
         //Rellenamos los headers de las columnas
         $scala = $this->object->getScala()->getBlankScala();
         for ($col = 0; $col < sizeof($scala[0]); $col++) {
@@ -214,6 +212,8 @@ class assScalaQuestionGUI extends assQuestionGUI
 
             // Set the content for the cell
             $template->setVariable("HEADER_TEXT", $scala[0][$col]);
+            $template->setVariable("COLUMN_INDEX", (string) $col);
+            $template->setVariable("ROW_INDEX", "0");
 
             // Parse the current cell
             $template->parseCurrentBlock();
@@ -237,9 +237,11 @@ class assScalaQuestionGUI extends assQuestionGUI
                 $template->setCurrentBlock('scala_cells');
 
                 // Set the content for the cell
-                $template->setVariable("ROW", (string)$row);
-                $template->setVariable("COLUMN", (string)$col);
+                $template->setVariable("ROW", (string) $row);
+                $template->setVariable("COLUMN", (string) $col);
                 $template->setVariable("QUESTION_ID", $this->object->getId());
+                $template->setVariable("COLUMN_INDEX", (string) $col);
+                $template->setVariable("ROW_INDEX", "0");
 
                 if ($user_solution[$row - 1] == $col) {
                     $template->setVariable("CHECKED", "checked");
@@ -291,7 +293,6 @@ class assScalaQuestionGUI extends assQuestionGUI
             'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/tpl.il_as_qpl_xqscala_output.js'
         );
 
-
         //Rellenamos los headers de las columnas
         $scala = $this->object->getScala()->getBlankScala();
         for ($col = 0; $col < sizeof($scala[0]); $col++) {
@@ -300,7 +301,8 @@ class assScalaQuestionGUI extends assQuestionGUI
 
             // Set the content for the cell
             $template->setVariable("HEADER_TEXT", $scala[0][$col]);
-
+            $template->setVariable("COLUMN_INDEX", (string) $col);
+            $template->setVariable("ROW_INDEX", "0");
             // Parse the current cell
             $template->parseCurrentBlock();
         }
@@ -323,9 +325,11 @@ class assScalaQuestionGUI extends assQuestionGUI
                 $template->setCurrentBlock('scala_cells');
 
                 // Set the content for the cell
-                $template->setVariable("ROW", (string)$row);
-                $template->setVariable("COLUMN", (string)$col);
+                $template->setVariable("ROW", (string) $row);
+                $template->setVariable("COLUMN", (string) $col);
                 $template->setVariable("QUESTION_ID", $this->object->getId());
+                $template->setVariable("COLUMN_INDEX", (string) $col);
+                $template->setVariable("ROW_INDEX", (string) $row);
 
                 if ($user_solution[$row - 1] == $col) {
                     $template->setVariable("CHECKED", "checked");
@@ -372,9 +376,8 @@ class assScalaQuestionGUI extends assQuestionGUI
         $show_manual_scoring = false,
         $show_question_text = true
     ): string {
-
-        if($active_id == 0){
-        return "";
+        if ($active_id == 0) {
+            return "";
         }
 
         global $DIC;
@@ -404,7 +407,6 @@ class assScalaQuestionGUI extends assQuestionGUI
             'Customizing/global/plugins/Modules/TestQuestionPool/Questions/assScalaQuestion/templates/tpl.il_as_qpl_xqscala_output.js'
         );
 
-
         //Rellenamos los headers de las columnas
         $scala = $this->object->getScala()->getBlankScala();
         for ($col = 0; $col < sizeof($scala[0]); $col++) {
@@ -413,6 +415,8 @@ class assScalaQuestionGUI extends assQuestionGUI
 
             // Set the content for the cell
             $template->setVariable("HEADER_TEXT", $scala[0][$col]);
+            $template->setVariable("COLUMN_INDEX", (string) $col);
+            $template->setVariable("ROW_INDEX", "0");
 
             // Parse the current cell
             $template->parseCurrentBlock();
@@ -427,7 +431,6 @@ class assScalaQuestionGUI extends assQuestionGUI
             //Rellenamos el header de cada fila
             $template->setCurrentBlock('scala_header');
             $template->setVariable("HEADER_TEXT", $scala[$row][0]);
-
             $template->parseCurrentBlock();
 
             // Iterate over the matrix columns
@@ -436,16 +439,17 @@ class assScalaQuestionGUI extends assQuestionGUI
                 $template->setCurrentBlock('scala_cells');
 
                 // Set the content for the cell
-                $template->setVariable("ROW", (string)$row);
-                $template->setVariable("COLUMN", (string)$col);
+                $template->setVariable("ROW", (string) $row);
+                $template->setVariable("COLUMN", (string) $col);
                 $template->setVariable("QUESTION_ID", $this->object->getId());
+                $template->setVariable("COLUMN_INDEX", (string) $col);
+                $template->setVariable("ROW_INDEX", (string) $row);
 
                 if ($user_solution[$row - 1] == $col) {
                     $template->setVariable("CHECKED", "checked");
-                }else{
+                } else {
                     $template->setVariable("DISABLE", "disabled");
                 }
-
 
                 // Parse the current cell
                 $template->parseCurrentBlock();
@@ -459,7 +463,11 @@ class assScalaQuestionGUI extends assQuestionGUI
 
         if (!$show_question_only) {
             // get page object output
-            $question_output = $this->getILIASPage($question_output . $this->getSpecificFeedbackOutput($user_solution, $this->object->getReachedPoints($active_id,$pass)));
+            $question_output = $this->getILIASPage(
+                $question_output . $this->getSpecificFeedbackOutput(
+                    $user_solution, $this->object->getReachedPoints($active_id, $pass)
+                )
+            );
         }
         return $question_output;
     }
@@ -474,7 +482,7 @@ class assScalaQuestionGUI extends assQuestionGUI
     public function getSpecificFeedbackOutput($userSolution, $reached_points = null): string
     {
         $max_points = $this->object->getPoints();
-        if( $reached_points == null){
+        if ($reached_points == null) {
             $reached_points = $this->object->getReachedPointsForPreview();
         }
 
