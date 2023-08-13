@@ -22,7 +22,7 @@ declare(strict_types=1);
  */
 
 $id = "xqscala";
-$version = "0.2";
+$version = "1.0";
 $ilias_min_version = "7.12";
 $ilias_max_version = "7.999";
 $responsible = "Jesús Copado Mejías";

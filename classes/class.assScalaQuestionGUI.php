@@ -363,7 +363,6 @@ class assScalaQuestionGUI extends assQuestionGUI
      * @param boolean $show_manual_scoring   Show specific information for the manual scoring output
      * @param bool    $show_question_text
      * @return string solution output of the question as HTML code
-     * @throws ilTestException
      */
     function getSolutionOutput(
         $active_id,
