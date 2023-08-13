@@ -376,13 +376,12 @@ class assScalaQuestionGUI extends assQuestionGUI
         $show_manual_scoring = false,
         $show_question_text = true
     ): string {
-
         if ($active_id == 0) {
             //TODO LNG
             return "no active id";
         }
 
-        if($show_correct_solution){
+        if ($show_correct_solution) {
             //TODO LNG
             return "no correct solution for this question type";
         }
