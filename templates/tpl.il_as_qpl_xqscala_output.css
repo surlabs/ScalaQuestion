@@ -1,38 +1,38 @@
 .ilc_question_matrix {
-    padding: 20px;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    background-color: rgba(255, 255, 255, 0.9); /* Ligeramente transparente para que se note el fondo */
-}
-
-.ilc_qtitle_Title {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #4c6586;
-    text-align: center;
+    font-family: Arial, sans-serif;
 }
 
 .scala-table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 10px;
 }
 
-.scala-table td {
-    background-color: #FFFFFF;
-    padding: 2em;
+.row, .header-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.cell {
+    padding: 15px 20px;
+    border: 1px solid #ccc;
     text-align: center;
-    box-shadow: 5px 4px 10px rgba(76, 101, 134, 0.3);
-    transition: transform 0.3s;
+    background-color: white;
+    width: 20%; /* Establece un ancho fijo, en este caso, si hay 5 columnas, es 20%. Ajusta según tu necesidad. */
+    box-sizing: border-box; /* Esto hace que el padding y el borde estén incluidos en el ancho total de la celda. */
 }
 
-.scala-table tr:hover td {
-    transform: scale(1.03);
-    box-shadow: 10px 6px 15px rgba(76, 101, 134, 0.4);
+.header-row{
+    padding: 15px 20px;
+    font-weight: bold;
+    background-color: #f4f4f4;
+    width: 20%;
+    box-sizing: border-box;
 }
 
-.scala-table input[type="radio"] {
+.row:not(:first-child) .cell:hover {
+    background-color: rgba(76, 101, 134, 0.1);
+}
+
+input[type="radio"] {
     appearance: none;
     border: 2px solid #4c6586;
     width: 24px;
@@ -43,7 +43,7 @@
     transition: background-color 0.3s, border-color 0.3s;
 }
 
-.scala-table input[type="radio"]:checked {
+input[type="radio"]:checked {
     background-color: #4c6586;
     border-color: #FFFFFF;
 }

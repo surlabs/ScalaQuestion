@@ -1,11 +1,27 @@
-// JavaScript para interactividad
-document.querySelectorAll('.scala-table input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', (event) => {
-        // Remove any existing highlighted rows
-        document.querySelectorAll('.scala-table tr').forEach(row => {
-            row.style.backgroundColor = "transparent";
+document.querySelectorAll('.scala-table .row:not(:first-child) .cell').forEach(cell => {
+    cell.addEventListener('mouseenter', function() {
+        // Highlight the row
+        cell.parentElement.classList.add('hover-row');
+
+        // Highlight the column
+        const colIndex = Array.from(cell.parentNode.children).indexOf(cell);
+        document.querySelectorAll('.scala-table .row:not(:first-child)').forEach(row => {
+            if (row.children[colIndex]) {
+                row.children[colIndex].classList.add('hover-col');
+            }
         });
-        // Highlight the selected row
-        event.target.closest('tr').style.backgroundColor = "rgba(76, 101, 134, 0.1)";
+    });
+
+    cell.addEventListener('mouseleave', function() {
+        // Remove highlight from the row
+        cell.parentElement.classList.remove('hover-row');
+
+        // Remove highlight from the column
+        const colIndex = Array.from(cell.parentNode.children).indexOf(cell);
+        document.querySelectorAll('.scala-table .row:not(:first-child)').forEach(row => {
+            if (row.children[colIndex]) {
+                row.children[colIndex].classList.remove('hover-col');
+            }
+        });
     });
 });

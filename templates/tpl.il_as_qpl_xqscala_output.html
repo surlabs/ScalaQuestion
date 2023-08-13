@@ -1,23 +1,23 @@
 <div class="ilc_question_matrix">
-    <table class="scala-table">
-        <tbody>
-        <tr>
+    <div class="scala-table">
+        <div class="row">
             <!-- BEGIN header_row -->
-            <td>{HEADER_TEXT}</td>
+            <div class="cell">{HEADER_TEXT}</div>
             <!-- END header_row -->
-        </tr>
+        </div>
+
         <!-- BEGIN scala_rows -->
-        <tr>
+        <div class="row">
             <!-- BEGIN scala_header -->
-            <td>{HEADER_TEXT}</td>
+            <div class="cell">{HEADER_TEXT}</div>
             <!-- END scala_header -->
+
             <!-- BEGIN scala_cells -->
-            <td>
+            <div class="cell">
                 <input type="radio" id="qid_{QUESTION_ID}_scala_cell_{ROW}_{COLUMN}" name="scala_qid_{QUESTION_ID}_row_{ROW}" value="{ROW}_{COLUMN}" {CHECKED} {DISABLE}>
-            </td>
+            </div>
             <!-- END scala_cells -->
-        </tr>
+        </div>
         <!-- END scala_rows -->
-        </tbody>
-    </table>
+    </div>
 </div>
