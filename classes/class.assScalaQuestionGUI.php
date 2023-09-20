@@ -475,7 +475,7 @@ class assScalaQuestionGUI extends assQuestionGUI
         if (!$show_question_only) {
             // get page object output
             $question_output = $this->getILIASPage(
-                $question_output . $this->getSpecificFeedbackOutput(
+                $this->getSpecificFeedbackOutput(
                     $user_solution, $this->object->getReachedPoints($active_id, $pass)
                 )
             );
