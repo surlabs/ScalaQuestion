@@ -497,12 +497,11 @@ class assScalaQuestionGUI extends assQuestionGUI
             $reached_points = $this->object->getReachedPointsForPreview();
         }
 
-        $reached_percent = (int) (($reached_points / $max_points) * 100);
         $feedback_scala = $this->object->getScala()->getFeedbackScala();
         $feedback = "";
 
         foreach ($feedback_scala as $minimal_percent_for_this_feedback => $feedback_text) {
-            if ($minimal_percent_for_this_feedback < $reached_percent) {
+            if ((float)$minimal_percent_for_this_feedback < $reached_points) {
                 $feedback = $feedback_text;
             }
         }

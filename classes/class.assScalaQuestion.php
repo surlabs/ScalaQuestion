@@ -406,6 +406,42 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         return (int) $clone->id;
     }
 
+    /**
+     * Copies an assScalaQuestion object into the Clipboard
+     *
+     * @param integer $target_questionpool_id
+     * @param string $title
+     *
+     * @return void|integer Id of the clone or nothing.
+     */
+    function copyObject(int $target_questionpool_id, string $title = "")
+    {
+        if ($this->id <= 0) {
+            // The question has not been saved. It cannot be duplicated
+            return;
+        }
+        // duplicate the question in database
+        $clone = $this;
+        include_once("./Modules/TestQuestionPool/classes/class.assQuestion.php");
+
+        $original_id = assQuestion::_getOriginalId($this->id);
+        $clone->id = -1;
+        $source_questionpool_id = $this->getObjId();
+        $clone->setObjId($target_questionpool_id);
+        if ($title) {
+            $clone->setTitle($title);
+        }
+        $clone->saveToDb("", TRUE);
+        // copy question page content
+        $clone->copyPageOfQuestion($original_id);
+        // copy XHTML media objects
+        $clone->copyXHTMLMediaObjectsOfQuestion($original_id);
+
+        $clone->onCopy($source_questionpool_id, $original_id, $clone->getObjId(), $clone->getId());
+
+        return $clone->id;
+    }
+
     /* Other overwritten methods */
 
     /**
@@ -443,12 +479,12 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      */
     function parseFeedback(string $text_to_parse): array
     {
-        $pattern = '/\[\[feedback:(\d+)\]\](.*?)\[\[\/feedback\]\]/s';
+        $pattern = '/\[\[feedback:(\d+\.\d+)\]\](.*?)\[\[\/feedback\]\]/s';
         preg_match_all($pattern, $text_to_parse, $matches, PREG_SET_ORDER);
 
         $result = [];
         foreach ($matches as $match) {
-            $key = intval($match[1]);
+            $key = $match[1];
             $value = $match[2];
             $result[$key] = $value;
         }
