@@ -146,7 +146,7 @@ class Scala
         foreach ($this->getItems() as $itemIndex => $itemText) {
             $row = [$itemText];
             foreach ($this->getColumns() as $columnIndex => $columnText) {
-                $row[] = $this->getEvaluationScala()[$itemIndex+1][$columnIndex+1];
+                $row[] = $this->getEvaluationScala()[($itemIndex+1)][($columnIndex+1)];
             }
             $scala[] = $row;
         }
