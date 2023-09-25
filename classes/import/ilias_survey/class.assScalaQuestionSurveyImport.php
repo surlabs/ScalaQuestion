@@ -73,14 +73,14 @@ class assScalaQuestionSurveyImport
             try {
                 //$this->clearMediaObjects();
 
-                //Set current question Id to -1 if we have created already one question, to ensure creation of the others
-                if ($number_of_questions_created > 0) {
-                    $this->getIliasQuestion()->setId(-1);
-                }
-
                 if ($this->matrixToScala($matrix)) {
                     $this->getIliasQuestion()->saveToDb();
                     $number_of_questions_created++;
+                }
+
+                //Set current question Id to -1 if we have created already one question, to ensure creation of the others
+                if ($number_of_questions_created > 0) {
+                    $this->getIliasQuestion()->setId(-1);
                 }
             } catch (Exception $exception) {
                 ilUtil::sendFailure($exception->getMessage(), true);
@@ -98,7 +98,7 @@ class assScalaQuestionSurveyImport
         try {
             //Establecemos valores generales de la pregunta
             $this->getIliasQuestion()->setTitle($matrix['@attributes']['title']);
-            $this->getIliasQuestion()->setComment($matrix['questiontext']['material']['mattext']);
+            //$this->getIliasQuestion()->setComment($matrix['questiontext']['material']['mattext']);
             $this->getIliasQuestion()->setAuthor($matrix['author']);
             $this->getIliasQuestion()->setQuestion($matrix['questiontext']['material']['mattext']);
 
@@ -130,25 +130,31 @@ class assScalaQuestionSurveyImport
 
             foreach ($this->getIliasQuestion()->getScala()->getItems() as $index_item => $item_text) {
                 foreach ($this->getIliasQuestion()->getScala()->getColumns() as $index_column => $column_text) {
+
                     //rellenamos con la puntuacion
-                    $points = (floatval($index_column + 1));
+                    $points = floatval($index_column + 1);
                     $current_evaluation[$index_item + 1][$index_column + 1] = $points;
 
                     //calculate max points
-                    if ((float) $max_points_array[$index_item] < $points) {
+                    if ((float) $max_points_array[$index_item] < (float) $points) {
                         $max_points_array[$index_item] = $points;
                     }
                 }
             }
             $this->getIliasQuestion()->getScala()->setEvaluationScala($current_evaluation);
+            if($this->getIliasQuestion()->getScala()->getNumItems()== 0){
+                $this->getIliasQuestion()->getScala()->setNumItems(1);
+            }
             $this->getIliasQuestion()->setPoints(
-                (int) array_sum($max_points_array) / $this->getIliasQuestion()->getScala()->getNumItems()
+
+                (int) array_sum($max_points_array) / (int)$this->getIliasQuestion()->getScala()->getNumItems()
             );
 
             $current_to_json = $this->getIliasQuestion()->getScala()->toJSON();
             $this->getIliasQuestion()->getScala()->setRawData($current_to_json);
             return true;
         } catch (Exception $exception) {
+            ilUtil::sendFailure($exception->getMessage() . ' in Frage: '. $this->getIliasQuestion()->getTitle(), true);
             return false;
         }
     }

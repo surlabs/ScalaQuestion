@@ -479,7 +479,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      */
     function parseFeedback(string $text_to_parse): array
     {
-        $pattern = '/\[\[feedback:(\d+\.\d+)\]\](.*?)\[\[\/feedback\]\]/s';
+        $pattern = '/\[\[feedback:(\d+,\d{1,5})\]\](.*?)\[\[\/feedback\]\]/s';
         preg_match_all($pattern, $text_to_parse, $matches, PREG_SET_ORDER);
 
         $result = [];

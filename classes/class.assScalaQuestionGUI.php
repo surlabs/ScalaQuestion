@@ -644,22 +644,7 @@ class assScalaQuestionGUI extends assQuestionGUI
         $question->setValue($this->object->getQuestion());
         $question->setRequired(true);
         $question->setRows(10);
-
-        if (!$this->object->getSelfAssessmentEditingMode()) {
-            if ($this->object->getAdditionalContentEditingMode() != assQuestion::ADDITIONAL_CONTENT_EDITING_MODE_IPE) {
-                $question->setUseRte(true);
-                include_once "./Services/AdvancedEditing/classes/class.ilObjAdvancedEditing.php";
-                $question->setRteTags(ilObjAdvancedEditing::_getUsedHTMLTags("assessment"));
-                $question->addPlugin("latex");
-                $question->addButton("latex");
-                $question->addButton("pastelatex");
-                $question->setRTESupport($this->object->getId(), "qpl", "assessment");
-            }
-        } else {
-            require_once 'Modules/TestQuestionPool/classes/questions/class.ilAssSelfAssessmentQuestionFormatter.php';
-            $question->setRteTags(ilAssSelfAssessmentQuestionFormatter::getSelfAssessmentTags());
-            $question->setUseTagsForRteOnly(false);
-        }
+        $this->addTinyMCESupport($question);
         $form->addItem($question);
 
         return $form;
@@ -693,5 +678,37 @@ class assScalaQuestionGUI extends assQuestionGUI
         }
 
         $DIC->ctrl()->redirect($this, 'editQuestion');
+    }
+
+    /**
+     */
+    public function addTinyMCESupport(ilTextAreaInputGUI $field)
+    {
+        if (empty($this->rte_tags)) {
+            $this->initTinyMCESupport();
+        }
+        $field->setUseRte(true);
+        $field->setRteTags($this->rte_tags);
+        $field->addPlugin("latex");
+        $field->addButton("latex");
+        $field->addButton("pastelatex");
+        $field->setRTESupport($this->object->getId(), "qpl", "xqscala");
+    }
+
+    /**
+     */
+    public function initTinyMCESupport()
+    {
+        include_once "./Services/AdvancedEditing/classes/class.ilObjAdvancedEditing.php";
+        $this->rte_tags = ilObjAdvancedEditing::_getUsedHTMLTags("xqscala");
+
+        $this->required_tags = array("a", "blockquote", "br", "cite", "code", "div", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "img", "li", "ol", "p", "pre", "span", "strike", "strong", "sub", "sup", "table", "caption", "thead", "th", "td", "tr", "u", "ul", "i", "b", "gap");
+
+        if (serialize($this->rte_tags) != serialize(($this->required_tags))) {
+
+            $this->rte_tags = $this->required_tags;
+            $obj_advance = new ilObjAdvancedEditing();
+            $obj_advance->setUsedHTMLTags($this->rte_tags, "xqscala");
+        }
     }
 }

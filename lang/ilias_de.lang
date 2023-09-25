@@ -18,7 +18,7 @@
  * source code, too.
  */
  <!-- language file start -->
- assScalaQuestion#:#Scala Question
-  scala#:#Scala
-  import_xml_file#:#Survey XML file
-  import_xml#:#Import XML
+ assScalaQuestion#:#Skalafrage
+  scala#:#Skala
+  import_xml_file#:#Umfrage XML Datei
+  import_xml#:#Import aus ILIAS Umfrage XML
