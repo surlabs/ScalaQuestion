@@ -501,7 +501,7 @@ class assScalaQuestionGUI extends assQuestionGUI
         $feedback = "";
 
         foreach ($feedback_scala as $minimal_percent_for_this_feedback => $feedback_text) {
-            if ((float)$minimal_percent_for_this_feedback < $reached_points) {
+            if ((float)$minimal_percent_for_this_feedback <= $reached_points) {
                 $feedback = $feedback_text;
             }
         }
