@@ -498,14 +498,16 @@ class assScalaQuestionGUI extends assQuestionGUI
         }
 
         $feedback_scala = $this->object->getScala()->getFeedbackScala();
-        $feedback = "";
+        $previous_maximal_points = 0.0;
 
-        foreach ($feedback_scala as $minimal_percent_for_this_feedback => $feedback_text) {
-            if ((float)$minimal_percent_for_this_feedback <= $reached_points) {
+        foreach ($feedback_scala as $minimal_points_for_this_feedback => $feedback_text) {
+
+            $maximal_points = floatval(str_replace(',', '.', $minimal_points_for_this_feedback));
+            if($reached_points >= $previous_maximal_points && $reached_points <= $maximal_points) {
                 $feedback = $feedback_text;
+                break;
             }
         }
-
         return $this->object->prepareTextareaOutput($feedback, true);
     }
 
@@ -702,10 +704,45 @@ class assScalaQuestionGUI extends assQuestionGUI
         include_once "./Services/AdvancedEditing/classes/class.ilObjAdvancedEditing.php";
         $this->rte_tags = ilObjAdvancedEditing::_getUsedHTMLTags("xqscala");
 
-        $this->required_tags = array("a", "blockquote", "br", "cite", "code", "div", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "img", "li", "ol", "p", "pre", "span", "strike", "strong", "sub", "sup", "table", "caption", "thead", "th", "td", "tr", "u", "ul", "i", "b", "gap");
+        $this->required_tags = array(
+            "a",
+            "blockquote",
+            "br",
+            "cite",
+            "code",
+            "div",
+            "em",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "hr",
+            "img",
+            "li",
+            "ol",
+            "p",
+            "pre",
+            "span",
+            "strike",
+            "strong",
+            "sub",
+            "sup",
+            "table",
+            "caption",
+            "thead",
+            "th",
+            "td",
+            "tr",
+            "u",
+            "ul",
+            "i",
+            "b",
+            "gap"
+        );
 
         if (serialize($this->rte_tags) != serialize(($this->required_tags))) {
-
             $this->rte_tags = $this->required_tags;
             $obj_advance = new ilObjAdvancedEditing();
             $obj_advance->setUsedHTMLTags($this->rte_tags, "xqscala");

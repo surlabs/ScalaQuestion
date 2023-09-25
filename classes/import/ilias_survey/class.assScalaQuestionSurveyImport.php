@@ -155,7 +155,9 @@ class assScalaQuestionSurveyImport
                     }
                 }
             }
+
             $this->getIliasQuestion()->getScala()->setEvaluationScala($current_evaluation);
+
             if ($this->getIliasQuestion()->getScala()->getNumItems() == 0) {
                 $this->getIliasQuestion()->getScala()->setNumItems(1);
             }
@@ -169,6 +171,7 @@ class assScalaQuestionSurveyImport
                 (int) array_sum($max_points_array) / $this->getIliasQuestion()->getScala()->getNumItems()
             );
 
+            var_dump($this->getIliasQuestion()->getScala());exit;
             $current_to_json = $this->getIliasQuestion()->getScala()->toJSON();
             $this->getIliasQuestion()->getScala()->setRawData($current_to_json);
             return true;
