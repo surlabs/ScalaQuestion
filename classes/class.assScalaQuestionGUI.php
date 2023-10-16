@@ -673,7 +673,7 @@ class assScalaQuestionGUI extends assQuestionGUI
                     $this->plugin, $this->object, (int) $_POST['first_question_id']
                 );
                 $num_of_questions = $import->import($xml_file);
-                ilUtil::sendSuccess($this->plugin->txt('success_import') . (string) $num_of_questions, true);
+                ilUtil::sendSuccess($this->plugin->txt('success_import') . " " . (string) $num_of_questions, true);
             }
         } else {
             ilUtil::sendFailure($this->plugin->txt('error_import_xml_not_loaded'), true);

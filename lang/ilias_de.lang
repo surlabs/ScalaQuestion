@@ -22,3 +22,4 @@
   scala#:#Skala
   import_xml_file#:#Umfrage XML Datei
   import_xml#:#Import aus ILIAS Umfrage XML
+  success_import#:#Anzahl der erstellten Skalafragen:

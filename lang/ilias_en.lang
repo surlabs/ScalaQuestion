@@ -22,3 +22,4 @@
   scala#:#Scala
   import_xml_file#:#Survey XML file
   import_xml#:#Import XML
+  success_import#:#Number of Scala Questions created:

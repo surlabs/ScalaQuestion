@@ -69,7 +69,15 @@ class assScalaQuestionSurveyImport
             ilUtil::sendFailure($this->getPlugin()->txt('error_import_xml_no_questions_in_survey'), true);
         }
 
-        foreach ($array['surveyquestions']['question'] as $matrix) {
+        $questions = isset($array['surveyquestions']['question'][0]) ?
+            $array['surveyquestions']['question'] :
+            array($array['surveyquestions']['question']);
+
+        foreach ($questions as $matrix) {
+            //Set current question Id to -1 if we have created already one question, to ensure creation of the others
+            if ($number_of_questions_created > 0) {
+                $this->getIliasQuestion()->setId(-1);
+            }
             try {
                 //$this->clearMediaObjects();
                 if (is_array($matrix)) {
@@ -77,11 +85,6 @@ class assScalaQuestionSurveyImport
                         if ($this->matrixToScala($matrix)) {
                             $this->getIliasQuestion()->saveToDb();
                             $number_of_questions_created++;
-                        }
-
-                        //Set current question Id to -1 if we have created already one question, to ensure creation of the others
-                        if ($number_of_questions_created > 0) {
-                            $this->getIliasQuestion()->setId(-1);
                         }
                     }
                 }
@@ -111,6 +114,9 @@ class assScalaQuestionSurveyImport
 
             //Establecemos matrixresponses como Scala Columns
             $matrix_response = $matrix['matrix']['responses']['response_single'];
+            if (!is_array($matrix_response) || !isset($matrix_response[0])) {
+                $matrix_response = [$matrix_response];
+            }
             foreach ($matrix_response as $index => $response_array) {
                 if (isset($response_array['material']['mattext'])) {
                     $current_columns[$index] = $response_array['material']['mattext'];
@@ -121,7 +127,9 @@ class assScalaQuestionSurveyImport
 
             //Establecemos matrixrows como Scala Items
             $matrix_row = $matrix['matrix']['matrixrows']['matrixrow'];
-
+            if (!is_array($matrix_row) || !isset($matrix_row[0])) {
+                $matrix_row = [$matrix_row];
+            }
             if (isset($matrix_row['@attributes'])) {
                 //una fila
                 $current_items[0] = $matrix_row['material']['mattext'];
@@ -171,7 +179,6 @@ class assScalaQuestionSurveyImport
                 (int) array_sum($max_points_array) / $this->getIliasQuestion()->getScala()->getNumItems()
             );
 
-            var_dump($this->getIliasQuestion()->getScala());exit;
             $current_to_json = $this->getIliasQuestion()->getScala()->toJSON();
             $this->getIliasQuestion()->getScala()->setRawData($current_to_json);
             return true;

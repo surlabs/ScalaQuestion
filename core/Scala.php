@@ -36,11 +36,11 @@ class Scala
     private string $raw_data;
 
     //Columnas de la escala en formato index => texto
-    private array $columns;
+    private array $columns = [];
     private int $num_columns;
 
     //Preguntas de la escala en formato index => texto
-    private array $items;
+    private array $items = [];
     private int $num_items;
 
     //Puntos de cada celda
