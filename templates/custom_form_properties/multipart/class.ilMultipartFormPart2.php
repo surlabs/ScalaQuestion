@@ -29,7 +29,7 @@ declare(strict_types=1);
  * @version $Id: 7.1$
  *
  */
-class ilMultipartFormPart
+class ilMultipartFormPart2
 {
 
 	/**
