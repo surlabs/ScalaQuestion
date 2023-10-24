@@ -29,7 +29,7 @@ declare(strict_types=1);
  * @version $Id: 7.1$
  *
  */
-class ilMultipartFormPropertyGUI extends ilFormPropertyGUI
+class ilMultipartFormProperty2GUI extends ilFormPropertyGUI
 {
 	/**
 	 * This array Includes all ilMultipartFormPart of this Form
