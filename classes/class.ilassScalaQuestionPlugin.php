@@ -29,7 +29,7 @@ declare(strict_types=1);
  *
  */
 
-class ilScalaQuestionPlugin extends ilQuestionsPlugin
+class ilassScalaQuestionPlugin extends ilQuestionsPlugin
 {
 
     /**
