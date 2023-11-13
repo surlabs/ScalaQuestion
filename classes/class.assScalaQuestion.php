@@ -269,7 +269,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      */
     public function calculatePoints($participant_solution): float
     {
-        $scala = $this->getScala()->getScalaWithPoints();
+        $scala = (array) $this->getScala()->getScalaWithPoints();
         $points = [];
 
         for ($row = 1; $row < sizeof($scala); $row++) {

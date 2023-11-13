@@ -375,6 +375,7 @@ class assScalaQuestionGUI extends assQuestionGUI
         $show_manual_scoring = false,
         $show_question_text = true
     ): string {
+        /*
         if ($active_id == 0) {
             //TODO LNG
             return "no active id";
@@ -390,6 +391,8 @@ class assScalaQuestionGUI extends assQuestionGUI
         if (is_null($pass)) {
             $pass = ilObjTest::_getPass($active_id);
         }
+
+
 
         $participant_solution = $this->object->getUserSolutionPreferingIntermediate($active_id, $pass)[0];
 
@@ -480,7 +483,11 @@ class assScalaQuestionGUI extends assQuestionGUI
                 )
             );
         }
-        return $question_output;
+        return $question_output;*/
+        return $this->getSpecificFeedbackOutput(
+            $this->object->getSolutionSubmit($active_id, $pass),
+            $this->object->getReachedPoints($active_id, $pass)
+        );
     }
 
     /**
@@ -493,10 +500,12 @@ class assScalaQuestionGUI extends assQuestionGUI
     public function getSpecificFeedbackOutput($userSolution, $reached_points = null): string
     {
         $max_points = $this->object->getPoints();
+        $feedback = "";
+
         if ($reached_points == null) {
             $reached_points = $this->object->getReachedPointsForPreview();
         }
-
+        $this->object->getScala()->setFeedbackScala($this->object->parseFeedback($this->object->getQuestion()));
         $feedback_scala = $this->object->getScala()->getFeedbackScala();
         $previous_maximal_points = 0.0;
 
@@ -517,7 +526,24 @@ class assScalaQuestionGUI extends assQuestionGUI
      */
     public function setQuestionTabs(): void
     {
-        parent::setQuestionTabs();
+        global $DIC;
+        $ilTabs = $DIC['ilTabs'];
+        $ilTabs->clearTargets();
+
+        $this->ctrl->setParameterByClass("ilAssQuestionPageGUI", "q_id", $_GET["q_id"]);
+        $q_type = $this->object->getQuestionType();
+
+        if (strlen($q_type)) {
+            $classname = $q_type . "GUI";
+            $this->ctrl->setParameterByClass(strtolower($classname), "sel_question_types", $q_type);
+            $this->ctrl->setParameterByClass(strtolower($classname), "q_id", $_GET["q_id"]);
+        }
+
+        if ($_GET["q_id"]) {
+            $this->addTab_Question($ilTabs);
+        }
+
+        $this->addBackTab($ilTabs);
     }
 
     /**
