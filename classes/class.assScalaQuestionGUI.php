@@ -243,8 +243,13 @@ class assScalaQuestionGUI extends assQuestionGUI
                 $template->setVariable("COLUMN_INDEX", (string) $col);
                 $template->setVariable("ROW_INDEX", "0");
 
-                if ($user_solution[$row - 1] == $col) {
-                    $template->setVariable("CHECKED", "checked");
+                if ($user_solution != null) {
+                    if (isset($user_solution[0]['value1'])) {
+                        $values = $this->stringToArray($user_solution[0]['value1']);
+                        if ((string)$values[$row - 1] == (string)$col) {
+                            $template->setVariable("CHECKED", "checked");
+                        }
+                    }
                 }
 
                 // Parse the current cell
@@ -331,7 +336,7 @@ class assScalaQuestionGUI extends assQuestionGUI
                 $template->setVariable("COLUMN_INDEX", (string) $col);
                 $template->setVariable("ROW_INDEX", (string) $row);
 
-                if ($user_solution[$row - 1] == $col) {
+                if ((string) $user_solution[$row - 1] == (string) $col) {
                     $template->setVariable("CHECKED", "checked");
                 }
 
@@ -772,6 +777,24 @@ class assScalaQuestionGUI extends assQuestionGUI
             $this->rte_tags = $this->required_tags;
             $obj_advance = new ilObjAdvancedEditing();
             $obj_advance->setUsedHTMLTags($this->rte_tags, "xqscala");
+        }
+    }
+
+    function stringToArray($string) {
+        // Asegúrate de que la cadena de entrada es un JSON válido
+        if (is_string($string)) {
+            // Decodifica el JSON a un array de PHP
+            $array = json_decode($string, true);
+
+            // Verifica si json_decode falló
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $array;
+            } else {
+                // Maneja el error si la cadena no es un JSON válido
+                return "Not a valid JSON.";
+            }
+        } else {
+            return "Not a valid string.";
         }
     }
 }

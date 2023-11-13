@@ -535,4 +535,30 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         $this->reached_points_for_preview = $reached_points_for_preview;
     }
 
+    public function setExportDetailsXLS($worksheet, $startrow, $active_id, $pass)
+    {
+        parent::setExportDetailsXLS($worksheet, $startrow, $active_id, $pass);
+
+        $solutions = $this->getSolutionValues($active_id, $pass);
+
+        $i = 1;
+        foreach ($solutions as $solution) {
+
+            if(isset($solution["value1"]) && $solution["value1"] != ""){
+                $user_response = json_decode($solution["value1"], true);
+            }
+
+            foreach ($this->getScala()->getItems() as $order => $question){
+                if(isset($user_response[$order])){
+                    $worksheet->setCell($startrow + $i, 1, $question);
+                    $worksheet->setCell($startrow + $i, 2, $this->getScala()->getColumns()[(int)$user_response[$order]]);
+                }
+                $i++;
+            }
+
+        }
+
+        return $startrow + $i + 1;
+    }
+
 }
