@@ -29,7 +29,7 @@ declare(strict_types=1);
  * @ingroup           ModulesTestQuestionPool
  *
  */
-class ilScalaFormPropertyGUI extends ilMultipartFormProperty2GUI
+class ilScalaFormPropertyGUI extends ilMultipartFormPropertyGUI
 {
 
     /**

@@ -27,3 +27,5 @@ $ilias_min_version = "7.12";
 $ilias_max_version = "7.999";
 $responsible = "Jesús Copado Mejías";
 $responsible_mail = "jcopado@surlabs.es";
+
+$supports_export = true;

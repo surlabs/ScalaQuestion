@@ -69,9 +69,10 @@ class assScalaQuestionSurveyImport
             ilUtil::sendFailure($this->getPlugin()->txt('error_import_xml_no_questions_in_survey'), true);
         }
 
-        $questions = isset($array['surveyquestions']['question'][0]) ?
-            $array['surveyquestions']['question'] :
-            array($array['surveyquestions']['question']);
+        $questions = $array['surveyquestions']['question'];
+        if (!is_array($questions) || !isset($questions[0])) {
+            $questions = [$questions];
+        }
 
         foreach ($questions as $matrix) {
             //Set current question Id to -1 if we have created already one question, to ensure creation of the others

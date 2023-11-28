@@ -243,14 +243,15 @@ class assScalaQuestionGUI extends assQuestionGUI
                 $template->setVariable("COLUMN_INDEX", (string) $col);
                 $template->setVariable("ROW_INDEX", "0");
 
-                if ($user_solution != null) {
-                    if (isset($user_solution[0]['value1'])) {
+                if($user_solution != null){
+                    if(isset($user_solution[0]['value1'])){
                         $values = $this->stringToArray($user_solution[0]['value1']);
-                        if ((string)$values[$row - 1] == (string)$col) {
+                        if ((string) $values[$row - 1] == (string) $col) {
                             $template->setVariable("CHECKED", "checked");
                         }
                     }
                 }
+
 
                 // Parse the current cell
                 $template->parseCurrentBlock();

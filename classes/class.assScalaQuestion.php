@@ -273,7 +273,10 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         $points = [];
 
         for ($row = 1; $row < sizeof($scala); $row++) {
-            $points[] = $scala[$row][$participant_solution[$row - 1]];
+            if (isset($participant_solution[$row - 1])
+                && isset($scala[$row][$participant_solution[$row - 1]])) {
+                $points[] = $scala[$row][$participant_solution[$row - 1]];
+            }
         }
 
         $sum = array_sum($points);
@@ -305,7 +308,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         //force db as we are in test
         $solution_from_db = $this->getSolutionSubmit($active_id, $pass)[0];
 
-        $participant_solution = json_decode($solution_from_db["value1"]);
+        $participant_solution = (array)json_decode($solution_from_db["value1"]);
 
         $reached_points = $this->calculatePoints($participant_solution);
 
@@ -319,7 +322,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      */
     public function calculateReachedPointsFromPreviewSession(ilAssQuestionPreviewSession $previewSession)
     {
-        $participant_solution = $previewSession->getParticipantsSolution();
+        $participant_solution = (array)$previewSession->getParticipantsSolution();
 
         $reached_points = $this->calculatePoints($participant_solution);
 
@@ -544,7 +547,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         $i = 1;
         foreach ($solutions as $solution) {
 
-            if(isset($solution["value1"]) && $solution["value1"] != ""){
+            if (isset($solution["value1"]) && $solution["value1"] != "") {
                 $user_response = json_decode($solution["value1"], true);
             }
 
@@ -559,6 +562,23 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         }
 
         return $startrow + $i + 1;
+    }
+
+    /**
+     * Returns a QTI xml representation of the question and sets the internal
+     * domxml variable with the DOM XML representation of the QTI xml representation
+     * @param bool $a_include_header
+     * @param bool $a_include_binary
+     * @param bool $a_shuffle
+     * @param bool $test_output
+     * @param bool $force_image_references
+     * @return string The QTI xml representation of the question
+     */
+    public function toXML($a_include_header = true, $a_include_binary = true, $a_shuffle = false, $test_output = false, $force_image_references = false): string
+    {
+        $export = new assScalaQuestionExport($this);
+
+        return $export->toXML($a_include_header, $a_include_binary, $a_shuffle, $test_output, $force_image_references);
     }
 
 }
