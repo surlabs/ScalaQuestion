@@ -552,9 +552,10 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
             }
 
             foreach ($this->getScala()->getItems() as $order => $question){
-                if(isset($user_response[$order])){
+                if(isset($user_response[$order]) && isset($this->getScala()->getEvaluationScala()[$order+$i][$user_response[$order]])){
                     $worksheet->setCell($startrow + $i, 1, $question);
                     $worksheet->setCell($startrow + $i, 2, $this->getScala()->getColumns()[(int)$user_response[$order]]);
+                    $worksheet->setCell($startrow + $i, 3, $this->getScala()->getEvaluationScala()[$order+$i][$user_response[$order]]);
                 }
                 $i++;
             }
