@@ -22,9 +22,9 @@ declare(strict_types=1);
  */
 
 $id = "xqscala";
-$version = "1.0";
-$ilias_min_version = "7.12";
-$ilias_max_version = "7.999";
+$version = "2.0";
+$ilias_min_version = "8.0";
+$ilias_max_version = "8.999";
 $responsible = "Jesús Copado Mejías";
 $responsible_mail = "jcopado@surlabs.es";
 

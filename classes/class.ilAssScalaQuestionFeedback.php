@@ -36,7 +36,7 @@ class ilAssScalaQuestionFeedback extends ilAssMultiOptionQuestionFeedback
      *
      * @return array $answerOptionsByAnswerIndex
      */
-    public function getAnswerOptionsByAnswerIndex()
+    public function getAnswerOptionsByAnswerIndex(): array
     {
     }
 }

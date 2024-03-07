@@ -41,7 +41,7 @@ class assScalaQuestionGUI extends assQuestionGUI
     /**
      * @var assScalaQuestion    The question object
      */
-    public $object;
+    public assQuestion $object;
 
     /**
      * Constructor
@@ -54,7 +54,11 @@ class assScalaQuestionGUI extends assQuestionGUI
     {
         parent::__construct();
 
-        $this->plugin = ilPlugin::getPluginObject(IL_COMP_MODULE, "TestQuestionPool", "qst", "assScalaQuestion");
+        global $DIC;
+        /** @var ilComponentFactory $component_factory */
+        $component_factory = $DIC["component.factory"];
+
+        $this->plugin = $component_factory->getPlugin("xqscala");
         $this->object = new assScalaQuestion();
         if ($id >= 0) {
             $this->object->loadFromDb($id);
@@ -705,9 +709,11 @@ class assScalaQuestionGUI extends assQuestionGUI
                     $this->plugin, $this->object, (int) $_POST['first_question_id']
                 );
                 $num_of_questions = $import->import($xml_file);
-                ilUtil::sendSuccess($this->plugin->txt('success_import') . " " . (string) $num_of_questions, true);
+                $this->tpl->setOnScreenMessage("success", $this->plugin->txt(('success_import') . " " . (string) $num_of_questions, true));
+                //ilUtil::sendSuccess($this->plugin->txt('success_import') . " " . (string) $num_of_questions, true);
             }
         } else {
+
             ilUtil::sendFailure($this->plugin->txt('error_import_xml_not_loaded'), true);
         }
 

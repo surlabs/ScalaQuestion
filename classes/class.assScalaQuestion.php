@@ -93,7 +93,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
     public function delete($question_id): void
     {
         //delete general question data
-        parent::delete($question_id);
+        parent::delete((int)$question_id);
 
         //delete scala specific question data
         global $DIC;
@@ -113,7 +113,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      * @param integer $question_id A unique key which defines the question in the database
      * @see assQuestion::loadFromDb()
      */
-    public function loadFromDb($question_id)
+    public function loadFromDb(int $question_id): void
     {
         global $DIC;
         $db = $DIC->database();
@@ -127,19 +127,15 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         if ($result->numRows() > 0) {
             $data = $db->fetchAssoc($result);
             $this->setId($question_id);
-            $this->setObjId($data['obj_fi']);
+            $this->setObjId((int)$data['obj_fi']);
             $this->setOriginalId($data['original_id']);
-            $this->setOwner($data['owner']);
+            $this->setOwner((int)$data['owner']);
             $this->setTitle((string) $data['title']);
             $this->setAuthor($data['author']);
-            $this->setPoints($data['points']);
+            $this->setPoints((float)$data['points']);
             $this->setComment((string) $data['description']);
 
             $this->setQuestion(ilRTE::_replaceMediaObjectImageSrc((string) $data['question_text'], 1));
-            $this->setEstimatedWorkingTime(
-                substr($data['working_time'], 0, 2), substr($data['working_time'], 3, 2),
-                substr($data['working_time'], 6, 2)
-            );
 
             //load scala specific data
             $res = $db->queryF(
@@ -169,7 +165,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
      * @param $a_save_parts
      * @return void
      */
-    function saveToDb($original_id = "", $a_save_parts = true)
+    function saveToDb($original_id = "", $a_save_parts = true): void
     {
         if ($this->getTitle() != "" and $this->getAuthor() != "" and $this->getQuestion() != "") {
             // save the basic data (implemented in parent)
@@ -390,7 +386,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
             $clone->setAuthor($author);
         }
         if ($owner) {
-            $clone->setOwner($owner);
+            $clone->setOwner((int)$owner);
         }
         if ($for_test) {
             $clone->saveToDb($original_id);
@@ -538,7 +534,7 @@ class assScalaQuestion extends assQuestion implements ilObjQuestionScoringAdjust
         $this->reached_points_for_preview = $reached_points_for_preview;
     }
 
-    public function setExportDetailsXLS($worksheet, $startrow, $active_id, $pass)
+    public function setExportDetailsXLS($worksheet, $startrow, $active_id, $pass): int
     {
         parent::setExportDetailsXLS($worksheet, $startrow, $active_id, $pass);
 

@@ -184,7 +184,9 @@ class assScalaQuestionSurveyImport
             $this->getIliasQuestion()->getScala()->setRawData($current_to_json);
             return true;
         } catch (Exception $exception) {
-            ilUtil::sendFailure($exception->getMessage() . ' in Frage: ' . $this->getIliasQuestion()->getTitle(), true);
+            global $DIC;
+            $DIC->ui()->factory()->messageBox()->failure($exception->getMessage());
+            //ilUtil::sendFailure($exception->getMessage() . ' in Frage: ' . $this->getIliasQuestion()->getTitle(), true);
             return false;
         }
     }
